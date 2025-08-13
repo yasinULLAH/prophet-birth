@@ -1,0 +1,1617 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="title" content="Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub">
+    <meta name="description"
+        content="A comprehensive Islamic application dedicated to Prophet Muhammad (PBUH), featuring Hijri calendar, event timelines, Hadith, Asma-ul-Husna, prayer times, Qibla direction, and more.">
+    <meta name="keywords"
+        content="Prophet Muhammad, Islam, Hijri Calendar, Mawlid, Hadith, Asma-ul-Husna, Prayer Times, Qibla, Islamic Events, Seerah, Migration, Badr, Mecca, Quran, Allah, Urdu, Arabic, PBUH, Pakistan, Yasin Ullah">
+    <meta name="author" content="Yasin Ullah, Pakistan">
+    <title>Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: Calibri, Arial, sans-serif;
+            text-align: center;
+            background-image: linear-gradient(to bottom, #2980b9, #6ab0de);
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: background-color 0.5s ease;
+        }
+
+        body.dark-mode {
+            background-image: linear-gradient(to bottom, #1a1a2e, #16213e);
+            color: #e0e0e0;
+        }
+
+        .navbar {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .navbar.dark-mode {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: white !important;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #f8f9fa;
+        }
+
+        .container-card {
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #3498db;
+            margin: 15px;
+            max-width: 90%;
+            width: 550px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+            transition: background-color 0.5s ease, border-color 0.5s ease;
+        }
+
+        .container-card.dark-mode {
+            background-color: rgba(10, 10, 20, 0.8);
+            border-color: #0f4c75;
+        }
+
+        .countdown-display,
+        .total-info,
+        .event-info,
+        .hadith-text,
+        .asma-name,
+        .prophet-name,
+        .qibla-display {
+            font-size: 1.5rem;
+            margin: 15px 0;
+            line-height: 1.8;
+            font-weight: bold;
+            color: #e0f2f7;
+        }
+
+        .total-info {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            color: #cfd8dc;
+        }
+
+        .form-label,
+        .modal-title,
+        .modal-body label {
+            color: white;
+        }
+
+        .modal-content {
+            background-color: #1f2833;
+            color: white;
+        }
+
+        .modal-header,
+        .modal-footer {
+            border-bottom: 1px solid #0f4c75;
+            border-top: none;
+        }
+
+        .modal-body .form-control,
+        .modal-body .form-select {
+            background-color: #2c394b;
+            color: white;
+            border: 1px solid #0f4c75;
+        }
+
+        .btn-close-white {
+            filter: invert(1);
+        }
+
+        .timeline-container {
+            width: 90%;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 20px 0;
+            margin-bottom: 30px;
+        }
+
+        .timeline {
+            display: inline-block;
+            position: relative;
+            padding-top: 50px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 25px;
+            height: 4px;
+            background-color: #3498db;
+        }
+
+        .timeline-event {
+            display: inline-block;
+            width: 200px;
+            margin: 0 50px;
+            position: relative;
+            text-align: center;
+            vertical-align: top;
+            cursor: pointer;
+        }
+
+        .timeline-event::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: #2980b9;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            z-index: 1;
+        }
+
+        .timeline-event-content {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            white-space: normal;
+            transition: background-color 0.3s ease;
+        }
+
+        .timeline-event-content:hover {
+            background-color: rgba(52, 152, 219, 0.8);
+        }
+
+        .language-options button {
+            margin: 5px;
+        }
+
+        .share-buttons button {
+            margin: 5px;
+            font-size: 1.2rem;
+        }
+
+        .qibla-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #34495e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px auto;
+            overflow: hidden;
+        }
+
+        .compass-arrow {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 80px solid #e74c3c;
+            transform-origin: bottom center;
+            top: 10%;
+            transition: transform 0.5s ease-out;
+        }
+
+        #qiblaMap {
+            height: 300px;
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+
+        .font-size-controls button {
+            margin: 5px;
+        }
+
+        .hadith-container {
+            min-height: 150px;
+        }
+
+        .asma-list,
+        .prophet-names-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #3498db;
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .asma-item,
+        .prophet-name-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: right;
+        }
+
+        .asma-item:last-child,
+        .prophet-name-item:last-child {
+            border-bottom: none;
+        }
+
+        .asma-item strong,
+        .prophet-name-item strong {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: #85c1e9;
+        }
+
+        .footer {
+            margin-top: auto;
+            padding: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.7rem;
+            }
+
+            .countdown-display,
+            .event-info,
+            .hadith-text,
+            .asma-name,
+            .prophet-name,
+            .qibla-display {
+                font-size: 1.2rem;
+            }
+
+            .total-info {
+                font-size: 1rem;
+            }
+
+            .timeline-event {
+                width: 150px;
+                margin: 0 20px;
+            }
+
+            .timeline-event-content {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .container-card {
+                padding: 15px;
+                margin: 10px;
+            }
+
+            .countdown-display,
+            .event-info,
+            .hadith-text,
+            .asma-name,
+            .prophet-name,
+            .qibla-display {
+                font-size: 1rem;
+            }
+
+            .total-info {
+                font-size: 0.9rem;
+            }
+
+            .timeline-event {
+                width: 120px;
+                margin: 0 10px;
+            }
+        }
+    </style>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">صلی اللہ علیہ و سلم</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" href="#birthCountdown">اہم
+                            تاریخیں</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#seerahEvents">سیرت کے واقعات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hadithOfTheDay">حدیثِ مبارکہ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#asmaUlHusna">اسمائے حسنیٰ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prophetNames">نبی اکرم کے القاب</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prayerTimesSection">اوقاتِ نماز</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#dateConverterModal">تاریخ کنورٹر</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal"
+                            data-bs-target="#settingsModal">ترتیبات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="exportData()">بیک اپ</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="document.getElementById('importFile').click()">بحال
+                            کریں</a>
+                        <input type="file" id="importFile" accept=".json" style="display: none;"
+                            onchange="importData(event)">
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="main-content">
+        <h1 class="animate__animated animate__fadeInDown">سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز</h1>
+        <div class="container-card animate__animated animate__fadeInUp" id="birthCountdown">
+            <h2>ولادت کا وقت (Birth Countdown):</h2>
+            <div id="countdownBirth" class="countdown-display"></div>
+            <div id="totalDaysMonthsBirth" class="total-info"></div>
+            <h2>اگلی ولادت کی سالگرہ (Next Mawlid):</h2>
+            <div id="nextMawlidCountdown" class="countdown-display"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons"
+                    onclick="shareContent('nextMawlidCountdown', 'اگلی ولادت کی سالگرہ')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="deathCountdown">
+            <h2>وفات کا وقت (Death Countdown):</h2>
+            <div id="countdownDeath" class="countdown-display"></div>
+            <div id="totalDaysMonthsDeath" class="total-info"></div>
+            <h2>وفات کی اگلی سالگرہ (Next Death Anniversary):</h2>
+            <div id="nextDeathCountdown" class="countdown-display"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons"
+                    onclick="shareContent('nextDeathCountdown', 'وفات کی اگلی سالگرہ')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="todayInSeerah">
+            <h2>آج سیرت میں (On This Day in Seerah):</h2>
+            <div id="seerahEventToday" class="event-info"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons" onclick="shareContent('seerahEventToday', 'آج سیرت میں')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp hadith-container" id="hadithOfTheDay">
+            <h2>آج کی حدیث (Hadith of the Day):</h2>
+            <div id="currentHadith" class="hadith-text"></div>
+            <div id="hadithSource" class="total-info text-end"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons" onclick="shareContent('currentHadith', 'آج کی حدیث')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="seerahEvents">
+            <h2>سیرتِ نبوی کے اہم واقعات (Key Events from Seerah):</h2>
+            <div class="timeline-container">
+                <div class="timeline" id="prophetTimeline">
+                </div>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="asmaUlHusna">
+            <h2>اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna):</h2>
+            <div class="asma-list">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="prophetNames">
+            <h2>نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ):</h2>
+            <div class="prophet-names-list">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="prayerTimesSection">
+            <h2>اوقاتِ نماز (Prayer Times):</h2>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="prayerLocation" class="form-label">اپنا شہر درج کریں (Enter your City):</label>
+                    <input type="text" class="form-control bg-secondary text-white border-0" id="prayerLocation"
+                        placeholder="مثلاً: لاہور, پاکستان">
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label for="calculationMethod" class="form-label">طریقہ حساب (Calculation Method):</label>
+                    <select class="form-select bg-secondary text-white border-0" id="calculationMethod">
+                        <option value="Karachi">University of Islamic Sciences, Karachi</option>
+                        <option value="MuslimWorldLeague">Muslim World League</option>
+                        <option value="NorthAmerica">ISNA (North America)</option>
+                        <option value="UmmAlQura">Umm al-Qura University, Makkah</option>
+                        <option value="Egyptian">Egyptian General Authority of Survey</option>
+                        <option value="Tehran">Institute of Geophysics, University of Tehran</option>
+                        <option value="Turkey">Diyanet (Turkey)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary mb-3" onclick="getPrayerTimes()">اوقاتِ نماز حاصل کریں</button>
+            <div id="prayerTimesDisplay" class="total-info">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="qiblaDirectionSection">
+            <h2>قبلہ کی سمت (Qibla Direction):</h2>
+            <div class="qibla-container">
+                <div class="compass-arrow" id="qiblaArrow"></div>
+                <i class="fas fa-compass fa-spin text-white" style="font-size: 80px;"></i>
+            </div>
+            <div id="qiblaMap"></div>
+            <div id="qiblaInfo" class="total-info mt-3">براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="sourcesSection">
+            <h2>ماخذ اور کتابیات (Sources & Bibliography):</h2>
+            <div class="total-info text-start">
+                <ul>
+                    <li>سیرت ابن ہشام (Seerat Ibn Hisham)</li>
+                    <li>صحیح بخاری (Sahih Bukhari)</li>
+                    <li>صحیح مسلم (Sahih Muslim)</li>
+                    <li>سنن ابی داؤد (Sunan Abu Dawud)</li>
+                    <li>جامع الترمذی (Jami` at-Tirmidhi)</li>
+                    <li>سنن نسائی (Sunan an-Nasa'i)</li>
+                    <li>سنن ابن ماجہ (Sunan Ibn Majah)</li>
+                    <li>(Additional scholarly Islamic texts and historical records)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">ترتیبات (Settings)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="dateSettingsForm">
+                        <div class="mb-3">
+                            <label for="birthDateInput" class="form-label">تاریخِ ولادت (Gregorian Birth Date):</label>
+                            <input type="date" class="form-control bg-secondary text-white border-0"
+                                id="birthDateInput">
+                        </div>
+                        <div class="mb-3">
+                            <label for="deathDateInput" class="form-label">تاریخِ وفات (Gregorian Death Date):</label>
+                            <input type="date" class="form-control bg-secondary text-white border-0"
+                                id="deathDateInput">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block" id="theme-label">تھیم (Theme):</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="themeMode" id="lightMode"
+                                    value="light" checked>
+                                <label class="form-check-label" for="lightMode">روشنی (Light)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="themeMode" id="darkMode"
+                                    value="dark">
+                                <label class="form-check-label" for="darkMode">تاریک (Dark)</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block" id="font-size-label">فونٹ سائز (Font Size):</label>
+                            <div class="font-size-controls">
+                                <button type="button" class="btn btn-sm btn-outline-light"
+                                    onclick="changeFontSize(-2)">A-</button>
+                                <button type="button" class="btn btn-sm btn-outline-light"
+                                    onclick="changeFontSize(2)">A+</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="languageSelect">زبان (Language):</label>
+                            <select class="form-select bg-secondary text-white border-0" id="languageSelect">
+                                <option value="ur">اردو (Urdu)</option>
+                                <option value="en">English</option>
+                                <option value="ar">العربية (Arabic)</option>
+                                <option value="id">Bahasa Indonesia</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">محفوظ کریں (Save Changes)</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="eventDetailModalLabel">واقعہ کی تفصیل (Event Details)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <h3 id="modalEventTitle" class="text-primary mb-3"></h3>
+                    <p id="modalEventGregorianDate"></p>
+                    <p id="modalEventHijriDate"></p>
+                    <p id="modalEventDescription"></p>
+                    <h6 class="mt-4"><span id="modal-source-label">حوالہ (Source): </span><span id="modalEventSource"
+                            class="text-info"></span></h6>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بند کریں (Close)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="dateConverterModal" tabindex="-1" aria-labelledby="dateConverterModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="dateConverterModalLabel">تاریخ کنورٹر (Date Converter)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="gregorianToHijriInput" class="form-label">عیسوی تاریخ (Gregorian Date):</label>
+                        <input type="date" class="form-control bg-secondary text-white border-0"
+                            id="gregorianToHijriInput">
+                        <button class="btn btn-primary mt-2 w-100" onclick="convertGregorianToHijri()">عیسوی سے ہجری
+                            (Gregorian to Hijri)</button>
+                        <p id="convertedHijriDate" class="mt-2"></p>
+                    </div>
+                    <hr>
+                    <div class="mb-3">
+                        <label for="hijriYearInput" class="form-label">ہجری سال (Hijri Year):</label>
+                        <input type="number" class="form-control bg-secondary text-white border-0" id="hijriYearInput"
+                            min="1" value="1445">
+                        <label for="hijriMonthInput" class="form-label">ہجری ماہ (Hijri Month):</label>
+                        <select class="form-select bg-secondary text-white border-0" id="hijriMonthInput">
+                            <option value="1">محرم (Muharram)</option>
+                            <option value="2">صفر (Safar)</option>
+                            <option value="3">ربیع الاول (Rabi' al-Awwal)</option>
+                            <option value="4">ربیع الثانی (Rabi' al-Thani)</option>
+                            <option value="5">جمادی الاول (Jumada al-Ula)</option>
+                            <option value="6">جمادی الثانی (Jumada al-Akhira)</option>
+                            <option value="7">رجب (Rajab)</option>
+                            <option value="8">شعبان (Sha'ban)</option>
+                            <option value="9">رمضان (Ramadan)</option>
+                            <option value="10">شوال (Shawwal)</option>
+                            <option value="11">ذوالقعدہ (Dhul-Qadah)</option>
+                            <option value="12">ذوالحجہ (Dhul-Hijjah)</option>
+                        </select>
+                        <label for="hijriDayInput" class="form-label">ہجری دن (Hijri Day):</label>
+                        <input type="number" class="form-control bg-secondary text-white border-0" id="hijriDayInput"
+                            min="1" max="30" value="1">
+                        <button class="btn btn-primary mt-2 w-100" onclick="convertHijriToGregorian()">ہجری سے عیسوی
+                            (Hijri to Gregorian)</button>
+                        <p id="convertedGregorianDate" class="mt-2"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>&copy; 2023 Yasin Ullah, Pakistan. All rights reserved.</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+    <script src="adhan.umd.min.js"></script>
+    <script>
+        let prophetMuhammadBirthDateGregorian, prophetMuhammadDeathDateGregorian;
+        let currentTheme = 'light';
+        let currentFontSize = 16;
+        let currentLanguage = 'ur';
+        const APP_DATA_KEY = 'prophet_islamic_hub_data';
+        const defaultBirthDateGregorian = new Date(Date.UTC(570, 3, 20));
+        const defaultDeathDateGregorian = new Date(Date.UTC(632, 5, 8));
+        const MAWLID_MONTH = 3;
+        const MAWLID_DAY = 12;
+        const DEATH_ANNIVERSARY_MONTH = 3;
+        const DEATH_ANNIVERSARY_DAY = 13;
+        const hadiths = [{
+            text: "جس نے مجھ پر ایک بار درود بھیجا، اللہ تعالیٰ اس پر دس رحمتیں نازل فرماتا ہے۔",
+            source: "صحیح مسلم 384",
+            explanation: "یہ حدیث ہمیں نبی اکرم ﷺ پر کثرت سے درود بھیجنے کی ترغیب دیتی ہے، جس کا اجر بہت بڑا ہے۔",
+            englishText: "Whoever sends blessings upon me once, Allah sends blessings upon him ten times.",
+            englishSource: "Sahih Muslim 384",
+            englishExplanation: "This Hadith encourages us to send abundant blessings upon the Prophet ﷺ, promising great reward."
+        }, {
+            text: "مومن کے لیے سب سے بہترین عمل اللہ پر ایمان اور اس کے رسول پر ایمان ہے۔",
+            source: "صحیح بخاری 25",
+            explanation: "یہ حدیث ایمان کی بنیاد اور اس کی اہمیت کو اجاگر کرتی ہے۔",
+            englishText: "The best deed for a believer is faith in Allah and His Messenger.",
+            englishSource: "Sahih Bukhari 25",
+            englishExplanation: "This Hadith highlights the foundation and importance of faith."
+        }, {
+            text: "دنیا میں ایسے رہو جیسے تم اجنبی ہو یا راستے کا مسافر۔",
+            source: "صحیح بخاری 6416",
+            explanation: "یہ حدیث دنیا کی بے ثباتی اور آخرت کی تیاری کی اہمیت پر زور دیتی ہے۔",
+            englishText: "Be in this world as if you are a stranger or a transient traveler.",
+            englishSource: "Sahih Bukhari 6416",
+            englishExplanation: "This Hadith emphasizes the transient nature of this world and the importance of preparing for the Hereafter."
+        }, {
+            text: "تم میں سے کوئی اس وقت تک مومن نہیں ہو سکتا جب تک کہ میں اس کو اس کے والد، اولاد اور تمام لوگوں سے زیادہ محبوب نہ ہو جاؤں۔",
+            source: "صحیح بخاری 15",
+            explanation: "یہ حدیث نبی اکرم ﷺ سے محبت کی اہمیت اور ایمان کے لیے اس کی بنیادی حیثیت کو بیان کرتی ہے۔",
+            englishText: "None of you will believe until I am more beloved to him than his father, his children, and all mankind.",
+            englishSource: "Sahih Bukhari 15",
+            englishExplanation: "This Hadith highlights the importance of loving the Prophet ﷺ and its fundamental role in faith."
+        },];
+        const asmaUlHusna = [{
+            arabic: "الرحمن",
+            transliteration: "Ar-Rahman",
+            meaningUr: "نہایت رحم کرنے والا",
+            meaningEn: "The Most Merciful"
+        }, {
+            arabic: "الرحيم",
+            transliteration: "Ar-Rahim",
+            meaningUr: "ہمیشہ رحم کرنے والا",
+            meaningEn: "The Especially Merciful"
+        }, {
+            arabic: "الملك",
+            transliteration: "Al-Malik",
+            meaningUr: "بادشاہ، مالکِ کُل",
+            meaningEn: "The King, The Sovereign"
+        }, {
+            arabic: "القدوس",
+            transliteration: "Al-Quddus",
+            meaningUr: "پاک ذات",
+            meaningEn: "The Holy, The Pure One"
+        }, {
+            arabic: "السلام",
+            transliteration: "As-Salam",
+            meaningUr: "سلامتی والا",
+            meaningEn: "The Giver of Peace"
+        }, {
+            arabic: "المؤمن",
+            transliteration: "Al-Mu'min",
+            meaningUr: "امن دینے والا",
+            meaningEn: "The Giver of Faith"
+        }, {
+            arabic: "المهيمن",
+            transliteration: "Al-Muhaymin",
+            meaningUr: "نگہبان، محافظ",
+            meaningEn: "The Protector, The Guardian"
+        }, {
+            arabic: "العزيز",
+            transliteration: "Al-Aziz",
+            meaningUr: "زبردست، غالب",
+            meaningEn: "The All-Mighty"
+        }, {
+            arabic: "الجبار",
+            transliteration: "Al-Jabbar",
+            meaningUr: "جبر کرنے والا، زبردستی اپنی مرضی منوانے والا",
+            meaningEn: "The Compeller, The Restorer"
+        }, {
+            arabic: "المتكبر",
+            transliteration: "Al-Mutakabbir",
+            meaningUr: "کبریائی والا",
+            meaningEn: "The Supreme, The Majestic"
+        },];
+        const prophetNames = [{
+            arabic: "محمد",
+            transliteration: "Muhammad",
+            meaningUr: "جس کی تعریف کی گئی ہو",
+            meaningEn: "The Praised One"
+        }, {
+            arabic: "احمد",
+            transliteration: "Ahmad",
+            meaningUr: "بہت زیادہ تعریف کے لائق",
+            meaningEn: "The Most Praised"
+        }, {
+            arabic: "المصطفیٰ",
+            transliteration: "Al-Mustafa",
+            meaningUr: "منتخب کیا ہوا",
+            meaningEn: "The Chosen One"
+        }, {
+            arabic: "الامین",
+            transliteration: "Al-Amin",
+            meaningUr: "امانت دار",
+            meaningEn: "The Trustworthy"
+        }, {
+            arabic: "رسول اللہ",
+            transliteration: "Rasul Allah",
+            meaningUr: "اللہ کا رسول",
+            meaningEn: "Messenger of Allah"
+        }, {
+            arabic: "نبی الرحمہ",
+            transliteration: "Nabi ar-Rahmah",
+            meaningUr: "رحمت کے نبی",
+            meaningEn: "Prophet of Mercy"
+        },];
+        const seerahEvents = [{
+            title: "ولادت نبی اکرم صلی اللہ علیہ و سلم",
+            gregorianDate: "April 20, 570 AD",
+            hijriDate: "12 Rabi' al-Awwal, Year of the Elephant",
+            description: "حضرت محمد صلی اللہ علیہ و سلم کی ولادت مکہ مکرمہ میں ہوئی۔ آپ صلی اللہ علیہ و سلم نبوت سے پہلے بھی 'الامین' کے نام سے مشہور تھے۔",
+            englishDescription: "Prophet Muhammad (PBUH) was born in Mecca. He was known as 'Al-Amin' (The Trustworthy) even before his prophethood.",
+            source: "سیرت ابن ہشام",
+            sortDate: new Date(Date.UTC(570, 3, 20))
+        }, {
+            title: "پہلی وحی (غار حرا)",
+            gregorianDate: "August 10, 610 AD",
+            hijriDate: "17 Ramadan, 13 BH",
+            description: "غار حرا میں جبرائیل علیہ السلام کے ذریعے پہلی وحی نازل ہوئی۔ یہ سورۃ العلق کی ابتدائی آیات تھیں۔",
+            englishDescription: "The first revelation came to Prophet Muhammad (PBUH) in the Cave of Hira through Angel Jibreel (AS). These were the first verses of Surah Al-Alaq.",
+            source: "صحیح بخاری",
+            sortDate: new Date(Date.UTC(610, 7, 10))
+        }, {
+            title: "ہجرت مدینہ",
+            gregorianDate: "September 24, 622 AD",
+            hijriDate: "12 Rabi' al-Awwal, 1 AH",
+            description: "نبی اکرم صلی اللہ علیہ و سلم نے مکہ سے مدینہ ہجرت کی، جو اسلامی کیلنڈر کی بنیاد بنی۔",
+            englishDescription: "The Prophet Muhammad (PBUH) migrated from Mecca to Medina, marking the beginning of the Islamic calendar.",
+            source: "سیرت ابن ہشام",
+            sortDate: new Date(Date.UTC(622, 8, 24))
+        }, {
+            title: "غزوہ بدر",
+            gregorianDate: "March 13, 624 AD",
+            hijriDate: "17 Ramadan, 2 AH",
+            description: "بدر کے مقام پر مسلمانوں اور کفارِ مکہ کے درمیان پہلی بڑی جنگ لڑی گئی، جس میں مسلمانوں کو فتح حاصل ہوئی۔",
+            englishDescription: "The first major battle between Muslims and Meccan pagans took place at Badr, resulting in a Muslim victory.",
+            source: "صحیح بخاری",
+            sortDate: new Date(Date.UTC(624, 2, 13))
+        }, {
+            title: "فتح مکہ",
+            gregorianDate: "January 11, 630 AD",
+            hijriDate: "20 Ramadan, 8 AH",
+            description: "نبی اکرم صلی اللہ علیہ و سلم نے بغیر کسی مزاحمت کے مکہ فتح کیا، جس سے اسلام کی طاقت اور امن کا پیغام پھیلا۔",
+            englishDescription: "Prophet Muhammad (PBUH) conquered Mecca peacefully, spreading the message of Islam and peace.",
+            source: "صحیح مسلم",
+            sortDate: new Date(Date.UTC(630, 0, 11))
+        }, {
+            title: "وفات نبی اکرم صلی اللہ علیہ و سلم",
+            gregorianDate: "June 8, 632 AD",
+            hijriDate: "13 Rabi' al-Awwal, 11 AH",
+            description: "نبی اکرم صلی اللہ علیہ و سلم نے مدینہ منورہ میں وفات پائی۔ یہ امت کے لیے ایک عظیم صدمہ تھا۔",
+            englishDescription: "Prophet Muhammad (PBUH) passed away in Medina. This was a great loss for the Ummah.",
+            source: "صحیح بخاری",
+            sortDate: new Date(Date.UTC(632, 5, 8))
+        },];
+        const hijriMonths = ["محرم", "صفر", "ربیع الاول", "ربیع الثانی", "جمادی الاول", "جمادی الثانی", "رجب", "شعبان", "رمضان", "شوال", "ذوالقعدہ", "ذوالحجہ"];
+        const hijriMonthsEn = ["Muharram", "Safar", "Rabi' al-Awwal", "Rabi' al-Thani", "Jumada al-Ula", "Jumada al-Akhira", "Rajab", "Sha'ban", "Ramadan", "Shawwal", "Dhul-Qadah", "Dhul-Hijjah"];
+        function gregorianToHijri(gDate) {
+            let year = gDate.getFullYear();
+            let month = gDate.getMonth() + 1;
+            let day = gDate.getDate();
+            let jd = Math.floor((1461 * (year + 4800 + Math.floor((month - 14) / 12))) / 4) +
+                Math.floor((367 * (month - 2 - 12 * (Math.floor((month - 14) / 12)))) / 12) -
+                Math.floor((3 * Math.floor((year + 4900 + Math.floor((month - 14) / 12)) / 100)) / 4) +
+                day - 32075;
+            let l = jd - 1948440 + 10632;
+            let n = Math.floor((l - 1) / 10631);
+            l = l - 10631 * n + 354;
+            let j = (Math.floor((10985 - l) / 5316)) * (Math.floor((50 * l) / 17719) + Math.floor(l / 5670)) + Math.floor(l / 31103) * 2;
+            let a = 8 * j + 21 * Math.floor(l / 11604);
+            let b = 1082 * j + Math.floor(l / 5028);
+            let c = Math.floor(a / 19493);
+            let d = Math.floor(b / 32000);
+            j = a % 19493;
+            b = b % 32000;
+            let Hyear = 30 * c + Math.floor(j / 1082);
+            let Hmonth = Math.floor((b / 29.5));
+            let Hday = b % 29 + 1;
+            if (Hmonth === 0) Hmonth = 12;
+            return {
+                year: Hyear,
+                month: Hmonth,
+                day: Hday
+            };
+        }
+        function hijriToGregorian(hYear, hMonth, hDay) {
+            let i = Math.floor(11 * hYear + 3) / 30 + Math.floor(hMonth * 59 + 1) / 30 - Math.floor(11 * hYear + 3) / 30 + 1 + 29.5 * (hMonth - 1) + hDay;
+            let g = new Date(i * 86400000);
+            return g;
+        }
+        const translations = {
+            ur: {
+                "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز",
+                "ولادت کا وقت (Birth Countdown):": "ولادت کا وقت:",
+                "وفات کا وقت (Death Countdown):": "وفات کا وقت:",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "اگلی ولادت کی سالگرہ:",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "وفات کی اگلی سالگرہ:",
+                "آج سیرت میں (On This Day in Seerah)": "آج سیرت میں:",
+                "آج کی حدیث (Hadith of the Day)": "آج کی حدیث:",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "اللہ کے 99 نام (اسمائے حسنیٰ):",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب:",
+                "اوقاتِ نماز (Prayer Times)": "اوقاتِ نماز:",
+                "قبلہ کی سمت (Qibla Direction)": "قبلہ کی سمت:",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "ماخذ اور کتابیات:",
+                "تاریخیں ترتیب دیں (Set Dates)": "تاریخیں ترتیب دیں",
+                "تاریخِ ولادت (Gregorian Birth Date)": "تاریخِ ولادت (عیسوی):",
+                "تاریخِ وفات (Gregorian Death Date)": "تاریخِ وفات (عیسوی):",
+                "تھیم (Theme)": "تھیم:",
+                "روشنی (Light)": "روشنی",
+                "تاریک (Dark)": "تاریک",
+                "فونٹ سائز (Font Size)": "فونٹ سائز:",
+                "زبان (Language)": "زبان:",
+                "محفوظ کریں (Save Changes)": "محفوظ کریں",
+                "واقعہ کی تفصیل (Event Details)": "واقعہ کی تفصیل",
+                "حوالہ (Source)": "حوالہ:",
+                "بند کریں (Close)": "بند کریں",
+                "تاریخ کنورٹر (Date Converter)": "تاریخ کنورٹر",
+                "عیسوی تاریخ (Gregorian Date)": "عیسوی تاریخ:",
+                "عیسوی سے ہجری (Gregorian to Hijri)": "عیسوی سے ہجری",
+                "ہجری سال (Hijri Year)": "ہجری سال:",
+                "ہجری ماہ (Hijri Month)": "ہجری ماہ:",
+                "ہجری دن (Hijri Day)": "ہجری دن:",
+                "ہجری سے عیسوی (Hijri to Gregorian)": "ہجری سے عیسوی",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "سیرتِ نبوی کے اہم واقعات:",
+                "اپنا شہر درج کریں (Enter your City)": "اپنا شہر درج کریں:",
+                "مثلاً: لاہور, پاکستان": "مثلاً: لاہور, پاکستان",
+                "طریقہ حساب (Calculation Method)": "طریقہ حساب:",
+                "اوقاتِ نماز حاصل کریں": "اوقاتِ نماز حاصل کریں",
+                "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "براہ کرم مقام کی اجازت دیں۔",
+                "سال (Years)": "سال",
+                "ماہ (Months)": "ماہ",
+                "دن (Days)": "دن",
+                "گھنٹے (Hours)": "گھنٹے",
+                "منٹ (Minutes)": "منٹ",
+                "سیکنڈ (Seconds)": "سیکنڈ",
+                "کل دن": "کل دن:",
+                "کل ماہ": "کل ماہ:",
+                "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "ڈیٹا کامیابی سے بحال ہو گیا ہے!",
+                "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔",
+                "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔",
+                "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "فائل پڑھنے میں خرابی پیش آئی۔"
+            },
+            en: {
+                "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "Prophet Muhammad (PBUH) Islamic Hub",
+                "ولادت کا وقت (Birth Countdown):": "Time Since Birth:",
+                "وفات کا وقت (Death Countdown):": "Time Since Death:",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Next Birth Anniversary (Mawlid):",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Next Death Anniversary:",
+                "آج سیرت میں (On This Day in Seerah)": "On This Day in Seerah:",
+                "آج کی حدیث (Hadith of the Day)": "Hadith of the Day:",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Names of Allah (Asma-ul-Husna):",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Names & Titles of the Prophet (PBUH):",
+                "اوقاتِ نماز (Prayer Times)": "Prayer Times:",
+                "قبلہ کی سمت (Qibla Direction)": "Qibla Direction:",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "Sources & Bibliography:",
+                "تاریخیں ترتیب دیں (Set Dates)": "Set Dates",
+                "تاریخِ ولادت (Gregorian Birth Date)": "Gregorian Birth Date:",
+                "تاریخِ وفات (Gregorian Death Date)": "Gregorian Death Date:",
+                "تھیم (Theme)": "Theme:",
+                "روشنی (Light)": "Light",
+                "تاریک (Dark)": "Dark",
+                "فونٹ سائز (Font Size)": "Font Size:",
+                "زبان (Language)": "Language:",
+                "محفوظ کریں (Save Changes)": "Save Changes",
+                "واقعہ کی تفصیل (Event Details)": "Event Details",
+                "حوالہ (Source)": "Source:",
+                "بند کریں (Close)": "Close",
+                "تاریخ کنورٹر (Date Converter)": "Date Converter",
+                "عیسوی تاریخ (Gregorian Date)": "Gregorian Date:",
+                "عیسوی سے ہجری (Gregorian to Hijri)": "Gregorian to Hijri",
+                "ہجری سال (Hijri Year)": "Hijri Year:",
+                "ہجری ماہ (Hijri Month)": "Hijri Month:",
+                "ہجری دن (Hijri Day)": "Hijri Day:",
+                "ہجری سے عیسوی (Hijri to Gregorian)": "Hijri to Gregorian",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Key Events from Seerah:",
+                "اپنا شہر درج کریں (Enter your City)": "Enter your City:",
+                "مثلاً: لاہور, پاکستان": "e.g., Lahore, Pakistan",
+                "طریقہ حساب (Calculation Method)": "Calculation Method:",
+                "اوقاتِ نماز حاصل کریں": "Get Prayer Times",
+                "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "Please allow location access.",
+                "سال (Years)": "years",
+                "ماہ (Months)": "months",
+                "دن (Days)": "days",
+                "گھنٹے (Hours)": "hours",
+                "منٹ (Minutes)": "minutes",
+                "سیکنڈ (Seconds)": "seconds",
+                "کل دن": "Total Days:",
+                "کل ماہ": "Total Months:",
+                "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "Data restored successfully!",
+                "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "Imported file does not contain valid dates.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "Error reading file. It might not be a valid JSON.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "Error reading file."
+            },
+            ar: {
+                "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "المركز الإسلامي للنبي محمد (صلى الله عليه وسلم)",
+                "ولادت کا وقت (Birth Countdown):": "الوقت منذ الميلاد:",
+                "وفات کا وقت (Death Countdown):": "الوقت منذ الوفاة:",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "المولد النبوي القادم:",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "ذكرى الوفاة القادمة:",
+                "آج سیرت میں (On This Day in Seerah)": "في مثل هذا اليوم من السيرة:",
+                "آج کی حدیث (Hadith of the Day)": "حديث اليوم:",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "أسماء الله الحسنى (99 اسمًا):",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "أسماء وألقاب النبي (صلى الله عليه وسلم):",
+                "اوقاتِ نماز (Prayer Times)": "مواقيت الصلاة:",
+                "قبلہ کی سمت (Qibla Direction)": "اتجاه القبلة:",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "المصادر والمراجع:",
+                "تاریخیں ترتیب دیں (Set Dates)": "تحديد التواريخ",
+                "تاریخِ ولادت (Gregorian Birth Date)": "تاريخ الميلاد (ميلادي):",
+                "تاریخِ وفات (Gregorian Death Date)": "تاريخ الوفاة (ميلادي):",
+                "تھیم (Theme)": "الوضع:",
+                "روشنی (Light)": "فاتح",
+                "تاریک (Dark)": "داكن",
+                "فونٹ سائز (Font Size)": "حجم الخط:",
+                "زبان (Language)": "اللغة:",
+                "محفوظ کریں (Save Changes)": "حفظ التغييرات",
+                "واقعہ کی تفصیل (Event Details)": "تفاصيل الحدث",
+                "حوالہ (Source)": "المصدر:",
+                "بند کریں (Close)": "إغلاق",
+                "تاریخ کنورٹر (Date Converter)": "محول التاريخ",
+                "عیسوی تاریخ (Gregorian Date)": "التاريخ الميلادي:",
+                "عیسوی سے ہجری (Gregorian to Hijri)": "ميلادي إلى هجري",
+                "ہجری سال (Hijri Year)": "السنة الهجرية:",
+                "ہجری ماہ (Hijri Month)": "الشهر الهجري:",
+                "ہجری دن (Hijri Day)": "اليوم الهجري:",
+                "ہجری سے عیسوی (Hijri to Gregorian)": "هجري إلى ميلادي",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "أحداث مهمة من السيرة النبوية:",
+                "اپنا شہر درج کریں (Enter your City)": "أدخل مدينتك:",
+                "مثلاً: لاہور, پاکستان": "مثال: القاهرة، مصر",
+                "طریقہ حساب (Calculation Method)": "طريقة الحساب:",
+                "اوقاتِ نماز حاصل کریں": "الحصول على أوقات الصلاة",
+                "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "يرجى السماح بالوصول إلى الموقع.",
+                "سال (Years)": "سنوات",
+                "ماہ (Months)": "أشهر",
+                "دن (Days)": "أيام",
+                "گھنٹے (Hours)": "ساعات",
+                "منٹ (Minutes)": "دقائق",
+                "سیکنڈ (Seconds)": "ثواني",
+                "کل دن": "إجمالي الأيام:",
+                "کل ماہ": "إجمالي الأشهر:",
+                "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "تم استعادة البيانات بنجاح!",
+                "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "الملف المستورد لا يحتوي على تواريخ صالحة.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "حدث خطأ أثناء قراءة الملف. قد لا يكون ملف JSON صالحًا.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "حدث خطأ أثناء قراءة الملف."
+            },
+            id: {
+                "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "Pusat Islam Nabi Muhammad (SAW)",
+                "ولادت کا وقت (Birth Countdown):": "Waktu Sejak Kelahiran:",
+                "وفات کا وقت (Death Countdown):": "Waktu Sejak Wafat:",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Peringatan Maulid Nabi Berikutnya:",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Peringatan Wafat Nabi Berikutnya:",
+                "آج سیرت میں (On This Day in Seerah)": "Hari Ini dalam Sirah Nabawiyah:",
+                "آج کی حدیث (Hadith of the Day)": "Hadits Hari Ini:",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Nama Allah (Asma-ul-Husna):",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Nama & Gelar Nabi Muhammad (SAW):",
+                "اوقاتِ نماز (Prayer Times)": "Waktu Sholat:",
+                "قبلہ کی سمت (Qibla Direction)": "Arah Kiblat:",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "Sumber & Referensi:",
+                "تاریخیں ترتیب دیں (Set Dates)": "Atur Tanggal",
+                "تاریخِ ولادت (Gregorian Birth Date)": "Tanggal Lahir (Masehi):",
+                "تاریخِ وفات (Gregorian Death Date)": "Tanggal Wafat (Masehi):",
+                "تھیم (Theme)": "Tema:",
+                "روشنی (Light)": "Terang",
+                "تاریک (Dark)": "Gelap",
+                "فونٹ سائز (Font Size)": "Ukuran Huruf:",
+                "زبان (Language)": "Bahasa:",
+                "محفوظ کریں (Save Changes)": "Simpan Perubahan",
+                "واقعہ کی تفصیل (Event Details)": "Detail Acara",
+                "حوالہ (Source)": "Sumber:",
+                "بند کریں (Close)": "Tutup",
+                "تاریخ کنورٹر (Date Converter)": "Konverter Tanggal",
+                "عیسوی تاریخ (Gregorian Date)": "Tanggal Masehi:",
+                "عیسوی سے ہجری (Gregorian to Hijri)": "Masehi ke Hijriah",
+                "ہجری سال (Hijri Year)": "Tahun Hijriah:",
+                "ہجری ماہ (Hijri Month)": "Bulan Hijriah:",
+                "ہجری دن (Hijri Day)": "Hari Hijriah:",
+                "ہجری سے عیسوی (Hijri to Gregorian)": "Hijriah ke Masehi",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Peristiwa Penting dari Sirah:",
+                "اپنا شہر درج کریں (Enter your City)": "Masukkan Kota Anda:",
+                "مثلاً: لاہور, پاکستان": "Contoh: Jakarta, Indonesia",
+                "طریقہ حساب (Calculation Method)": "Metode Perhitungan:",
+                "اوقاتِ نماز حاصل کریں": "Dapatkan Waktu Sholat",
+                "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "Mohon izinkan akses lokasi.",
+                "سال (Years)": "tahun",
+                "ماہ (Months)": "bulan",
+                "دن (Days)": "hari",
+                "گھنٹے (Hours)": "jam",
+                "منٹ (Minutes)": "menit",
+                "سیکنڈ (Seconds)": "detik",
+                "کل دن": "Total Hari:",
+                "کل ماہ": "Total Bulan:",
+                "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "Data berhasil dipulihkan!",
+                "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "File yang diimpor tidak mengandung tanggal yang valid.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "Terjadi kesalahan saat membaca file. Mungkin bukan file JSON yang valid.",
+                "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "Terjadi kesalahan saat membaca file."
+            }
+        };
+        function translatePage() {
+            const elements = document.querySelectorAll('[data-translate-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (translations[currentLanguage] && translations[currentLanguage][key]) {
+                    el.textContent = translations[currentLanguage][key];
+                }
+            });
+            document.querySelector('h1').textContent = translations[currentLanguage]["Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub"];
+            document.querySelector('#birthCountdown h2').textContent = translations[currentLanguage]["ولادت کا وقت (Birth Countdown):"];
+            document.querySelector('#deathCountdown h2').textContent = translations[currentLanguage]["وفات کا وقت (Death Countdown):"];
+            document.querySelector('#birthCountdown h2:nth-of-type(2)').textContent = translations[currentLanguage]["اگلی ولادت کی سالگرہ (Next Mawlid)"];
+            document.querySelector('#deathCountdown h2:nth-of-type(2)').textContent = translations[currentLanguage]["وفات کی اگلی سالگرہ (Next Death Anniversary)"];
+            document.querySelector('#todayInSeerah h2').textContent = translations[currentLanguage]["آج سیرت میں (On This Day in Seerah)"];
+            document.querySelector('#hadithOfTheDay h2').textContent = translations[currentLanguage]["آج کی حدیث (Hadith of the Day)"];
+            document.querySelector('#asmaUlHusna h2').textContent = translations[currentLanguage]["اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)"];
+            document.querySelector('#prophetNames h2').textContent = translations[currentLanguage]["نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)"];
+            document.querySelector('#prayerTimesSection h2').textContent = translations[currentLanguage]["اوقاتِ نماز (Prayer Times)"];
+            document.querySelector('#qiblaDirectionSection h2').textContent = translations[currentLanguage]["قبلہ کی سمت (Qibla Direction)"];
+            document.querySelector('#sourcesSection h2').textContent = translations[currentLanguage]["ماخذ اور کتابیات (Sources & Bibliography)"];
+            document.querySelector('#settingsModalLabel').textContent = translations[currentLanguage]["تاریخیں ترتیب دیں (Set Dates)"];
+            document.querySelector('label[for="birthDateInput"]').textContent = translations[currentLanguage]["تاریخِ ولادت (Gregorian Birth Date)"];
+            document.querySelector('label[for="deathDateInput"]').textContent = translations[currentLanguage]["تاریخِ وفات (Gregorian Death Date)"];
+            document.querySelector('label[for="languageSelect"]').textContent = translations[currentLanguage]["زبان (Language)"];
+            document.querySelector('label[for="lightMode"]').textContent = translations[currentLanguage]["روشنی (Light)"];
+            document.querySelector('label[for="darkMode"]').textContent = translations[currentLanguage]["تاریک (Dark)"];
+            document.querySelector('label[class*="form-label"][for="prayerLocation"]').textContent = translations[currentLanguage]["اپنا شہر درج کریں (Enter your City)"];
+            document.getElementById('prayerLocation').placeholder = translations[currentLanguage]["مثلاً: لاہور, پاکستان"];
+            document.querySelector('label[for="calculationMethod"]').textContent = translations[currentLanguage]["طریقہ حساب (Calculation Method)"];
+            document.querySelector('#qiblaInfo').textContent = translations[currentLanguage]["براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)"];
+            document.querySelector('#dateSettingsForm button[type="submit"]').textContent = translations[currentLanguage]["محفوظ کریں (Save Changes)"];
+            document.querySelector('#eventDetailModalLabel').textContent = translations[currentLanguage]["واقعہ کی تفصیل (Event Details)"];
+            const sourceSpan = document.getElementById('modalEventSource');
+            if (sourceSpan && sourceSpan.parentElement && sourceSpan.parentElement.firstChild.nodeType === Node.TEXT_NODE) {
+                sourceSpan.parentElement.firstChild.nodeValue = translations[currentLanguage]["حوالہ (Source)"] + " ";
+            }
+            document.querySelector('#eventDetailModal .modal-footer button').textContent = translations[currentLanguage]["بند کریں (Close)"];
+            document.querySelector('#dateConverterModalLabel').textContent = translations[currentLanguage]["تاریخ کنورٹر (Date Converter)"];
+            document.querySelector('label[for="gregorianToHijriInput"]').textContent = translations[currentLanguage]["عیسوی تاریخ (Gregorian Date)"];
+            document.querySelector('button[onclick="convertGregorianToHijri()"]').textContent = translations[currentLanguage]["عیسوی سے ہجری (Gregorian to Hijri)"];
+            document.querySelector('label[for="hijriYearInput"]').textContent = translations[currentLanguage]["ہجری سال (Hijri Year)"];
+            document.querySelector('label[for="hijriMonthInput"]').textContent = translations[currentLanguage]["ہجری ماہ (Hijri Month)"];
+            document.querySelector('label[for="hijriDayInput"]').textContent = translations[currentLanguage]["ہجری دن (Hijri Day)"];
+            document.querySelector('button[onclick="convertHijriToGregorian()"]').textContent = translations[currentLanguage]["ہجری سے عیسوی (Hijri to Gregorian)"];
+            document.querySelector('#prayerTimesSection button').textContent = translations[currentLanguage]["اوقاتِ نماز حاصل کریں"];
+            document.querySelector('#navbarNav .nav-item:nth-child(1) .nav-link').textContent = translations[currentLanguage]["اگلی ولادت کی سالگرہ (Next Mawlid)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(2) .nav-link').textContent = translations[currentLanguage]["سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(3) .nav-link').textContent = translations[currentLanguage]["آج کی حدیث (Hadith of the Day)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(4) .nav-link').textContent = translations[currentLanguage]["اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(5) .nav-link').textContent = translations[currentLanguage]["نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(6) .nav-link').textContent = translations[currentLanguage]["اوقاتِ نماز (Prayer Times)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(7) .nav-link').textContent = translations[currentLanguage]["تاریخ کنورٹر (Date Converter)"];
+            document.querySelector('#navbarNav .nav-item:nth-child(8) .nav-link').textContent = 'Settings';
+            document.querySelector('#navbarNav .nav-item:nth-child(9) .nav-link').textContent = 'Backup';
+            document.querySelector('#navbarNav .nav-item:nth-child(10) .nav-link').textContent = 'Restore';
+            document.getElementById('theme-label').textContent = translations[currentLanguage]["تھیم (Theme)"];
+            document.getElementById('font-size-label').textContent = translations[currentLanguage]["فونٹ سائز (Font Size)"];
+            document.querySelector('#prayerTimesSection h2').textContent = translations[currentLanguage]["اوقاتِ نماز (Prayer Times)"];
+            document.querySelector('#seerahEvents h2').textContent = translations[currentLanguage]["سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)"];
+            hijriMonthsEn.forEach((month, index) => {
+                const option = document.querySelector(`#hijriMonthInput option[value="${index + 1}"]`);
+                if (option) {
+                    option.textContent = currentLanguage === 'ur' ? hijriMonths[index] + ' (' + month + ')' : translations[currentLanguage][month] || month;
+                }
+            });
+            displayHadithOfTheDay();
+            populateAsmaUlHusna();
+            populateProphetNames();
+        }
+        function changeFontSize(change) {
+            currentFontSize += change;
+            document.body.style.fontSize = `${currentFontSize}px`;
+            document.querySelectorAll('.countdown-display, .event-info, .hadith-text, .asma-name, .prophet-name, .qibla-display').forEach(el => {
+                el.style.fontSize = `${currentFontSize * 0.9}px`;
+            });
+            document.querySelectorAll('.total-info').forEach(el => {
+                el.style.fontSize = `${currentFontSize * 0.75}px`;
+            });
+            saveData();
+        }
+        function setTheme(mode) {
+            currentTheme = mode;
+            document.body.classList.toggle('dark-mode', mode === 'dark');
+            document.querySelector('.navbar').classList.toggle('dark-mode', mode === 'dark');
+            document.querySelectorAll('.container-card').forEach(card => card.classList.toggle('dark-mode', mode === 'dark'));
+            if (mode === 'dark') {
+                document.getElementById('darkMode').checked = true;
+            } else {
+                document.getElementById('lightMode').checked = true;
+            }
+            saveData();
+        }
+        document.getElementById('lightMode').addEventListener('change', () => setTheme('light'));
+        document.getElementById('darkMode').addEventListener('change', () => setTheme('dark'));
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            currentLanguage = e.target.value;
+            translatePage();
+            saveData();
+        });
+        function formatTimeDifference(ms, isCountdown = false) {
+            const absMs = Math.abs(ms);
+            const totalSeconds = Math.floor(absMs / 1000);
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+            const years = Math.floor(totalDays / 365.25);
+            const remainingDaysAfterYears = totalDays % 365.25;
+            const months = Math.floor(remainingDaysAfterYears / 30.44);
+            const remainingDaysAfterMonths = Math.floor(remainingDaysAfterYears % 30.44);
+            const hours = totalHours % 24;
+            const minutes = totalMinutes % 60;
+            const seconds = totalSeconds % 60;
+            const sign = ms < 0 ? translations[currentLanguage]["باقی:"] || "Remaining:" : "";
+            return `${sign} ${years} ${translations[currentLanguage]["سال (Years)"]}
+                    ${months} ${translations[currentLanguage]["ماہ (Months)"]}
+                    ${remainingDaysAfterMonths} ${translations[currentLanguage]["دن (Days)"]}
+                    ${hours} ${translations[currentLanguage]["گھنٹے (Hours)"]}
+                    ${minutes} ${translations[currentLanguage]["منٹ (Minutes)"]}
+                    ${seconds} ${translations[currentLanguage]["سیکنڈ (Seconds)"]}`;
+        }
+        function calculateTotalDaysMonths(ms) {
+            if (ms < 0) return `${translations[currentLanguage]["کل دن"]}: N/A, ${translations[currentLanguage]["کل ماہ"]}: N/A`;
+            const totalDays = Math.floor(ms / (1000 * 60 * 60 * 24));
+            const totalMonths = Math.floor(totalDays / 30.44);
+            return `${translations[currentLanguage]["کل دن"]}: ${totalDays} ${translations[currentLanguage]["دن (Days)"]}
+                    ${translations[currentLanguage]["کل ماہ"]}: ${totalMonths} ${translations[currentLanguage]["ماہ (Months)"]}`;
+        }
+        function updateCountdown() {
+            const now = Date.now();
+            if (prophetMuhammadBirthDateGregorian) {
+                const birthTimeDifference = now - prophetMuhammadBirthDateGregorian.getTime();
+                document.getElementById("countdownBirth").innerHTML = formatTimeDifference(birthTimeDifference);
+                document.getElementById("totalDaysMonthsBirth").innerHTML = calculateTotalDaysMonths(birthTimeDifference);
+            }
+            if (prophetMuhammadDeathDateGregorian) {
+                const deathTimeDifference = now - prophetMuhammadDeathDateGregorian.getTime();
+                document.getElementById("countdownDeath").innerHTML = formatTimeDifference(deathTimeDifference);
+                document.getElementById("totalDaysMonthsDeath").innerHTML = calculateTotalDaysMonths(deathTimeDifference);
+            }
+            updateUpcomingAnniversaries();
+            displaySeerahEventToday();
+        }
+        function updateUpcomingAnniversaries() {
+            const today = new Date();
+            const todayHijri = gregorianToHijri(today);
+            let mawlidYear = todayHijri.year;
+            let mawlidDate = new Date(hijriToGregorian(mawlidYear, MAWLID_MONTH, MAWLID_DAY));
+            if (mawlidDate.getTime() < today.getTime()) {
+                mawlidYear++;
+                mawlidDate = new Date(hijriToGregorian(mawlidYear, MAWLID_MONTH, MAWLID_DAY));
+            }
+            const timeToMawlid = mawlidDate.getTime() - today.getTime();
+            document.getElementById("nextMawlidCountdown").innerHTML = formatTimeDifference(timeToMawlid, true);
+            let deathYear = todayHijri.year;
+            let deathDate = new Date(hijriToGregorian(deathYear, DEATH_ANNIVERSARY_MONTH, DEATH_ANNIVERSARY_DAY));
+            if (deathDate.getTime() < today.getTime()) {
+                deathYear++;
+                deathDate = new Date(hijriToGregorian(deathYear, DEATH_ANNIVERSARY_MONTH, DEATH_ANNIVERSARY_DAY));
+            }
+            const timeToDeath = deathDate.getTime() - today.getTime();
+            document.getElementById("nextDeathCountdown").innerHTML = formatTimeDifference(timeToDeath, true);
+        }
+        function displaySeerahEventToday() {
+            const today = new Date();
+            const todayHijri = gregorianToHijri(today);
+            const seerahEventTodayElement = document.getElementById("seerahEventToday");
+            let found = false;
+            seerahEvents.forEach(event => {
+                const eventHijri = gregorianToHijri(event.sortDate);
+                if (eventHijri.month === todayHijri.month && eventHijri.day === todayHijri.day) {
+                    seerahEventTodayElement.innerHTML = `<strong>${currentLanguage === 'ur' ? event.title : event.englishTitle || event.title}</strong><br>${currentLanguage === 'ur' ? event.description : event.englishDescription || event.description}`;
+                    found = true;
+                }
+            });
+            if (!found) {
+                seerahEventTodayElement.innerHTML = currentLanguage === 'ur' ? "آج کے دن سیرت میں کوئی خاص واقعہ نہیں مل سکا (No specific event found in Seerah for today)." : "No specific event found in Seerah for today.";
+            }
+        }
+        let lastHadithIndex = -1;
+        function displayHadithOfTheDay() {
+            const today = new Date();
+            const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
+            const hadithIndex = dayOfYear % hadiths.length;
+            const hadith = hadiths[hadithIndex];
+            document.getElementById("currentHadith").innerHTML = currentLanguage === 'ur' ? hadith.text : hadith.englishText;
+            document.getElementById("hadithSource").innerHTML = currentLanguage === 'ur' ? `(ماخذ: ${hadith.source})` : `(Source: ${hadith.englishSource})`;
+        }
+        function populateAsmaUlHusna() {
+            const asmaList = document.querySelector('.asma-list');
+            asmaList.innerHTML = '';
+            asmaUlHusna.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'asma-item';
+                div.innerHTML = `<strong>${name.arabic} (${name.transliteration})</strong><br>${currentLanguage === 'ur' ? name.meaningUr : name.meaningEn}`;
+                asmaList.appendChild(div);
+            });
+        }
+        function populateProphetNames() {
+            const prophetNamesList = document.querySelector('.prophet-names-list');
+            prophetNamesList.innerHTML = '';
+            prophetNames.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'prophet-name-item';
+                div.innerHTML = `<strong>${name.arabic} (${name.transliteration})</strong><br>${currentLanguage === 'ur' ? name.meaningUr : name.meaningEn}`;
+                prophetNamesList.appendChild(div);
+            });
+        }
+        function populateTimeline() {
+            const timelineDiv = document.getElementById('prophetTimeline');
+            timelineDiv.innerHTML = '';
+            seerahEvents.sort((a, b) => a.sortDate - b.sortDate);
+            seerahEvents.forEach(event => {
+                const eventDiv = document.createElement('div');
+                eventDiv.className = 'timeline-event';
+                eventDiv.innerHTML = `
+                    <div class="timeline-event-content">
+                        <strong>${currentLanguage === 'ur' ? event.title : event.englishTitle || event.title}</strong><br>
+                        ${event.sortDate.getFullYear()} ${currentLanguage === 'ur' ? 'عیسوی' : 'AD'}
+                    </div>
+                `;
+                eventDiv.onclick = () => showEventDetail(event);
+                timelineDiv.appendChild(eventDiv);
+            });
+        }
+        function showEventDetail(event) {
+            document.getElementById('modalEventTitle').textContent = currentLanguage === 'ur' ? event.title : event.englishTitle || event.title;
+            document.getElementById('modalEventGregorianDate').textContent = `Gregorian: ${event.gregorianDate}`;
+            document.getElementById('modalEventHijriDate').textContent = `Hijri: ${event.hijriDate}`;
+            document.getElementById('modalEventDescription').textContent = currentLanguage === 'ur' ? event.description : event.englishDescription || event.description;
+            document.getElementById('modalEventSource').textContent = event.source;
+            const eventDetailModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+            eventDetailModal.show();
+        }
+        function convertGregorianToHijri() {
+            const gregorianDateStr = document.getElementById('gregorianToHijriInput').value;
+            if (gregorianDateStr) {
+                const gDate = new Date(gregorianDateStr + 'T00:00:00Z');
+                const hDate = gregorianToHijri(gDate);
+                const hijriMonthName = currentLanguage === 'ur' ? hijriMonths[hDate.month - 1] : hijriMonthsEn[hDate.month - 1];
+                document.getElementById('convertedHijriDate').textContent = `${hDate.day} ${hijriMonthName}, ${hDate.year} ہجری`;
+            } else {
+                document.getElementById('convertedHijriDate').textContent = 'براہ کرم تاریخ درج کریں۔';
+            }
+        }
+        function convertHijriToGregorian() {
+            const hijriYear = parseInt(document.getElementById('hijriYearInput').value);
+            const hijriMonth = parseInt(document.getElementById('hijriMonthInput').value);
+            const hijriDay = parseInt(document.getElementById('hijriDayInput').value);
+            if (hijriYear && hijriMonth && hijriDay) {
+                const gDate = hijriToGregorian(hijriYear, hijriMonth, hijriDay);
+                document.getElementById('convertedGregorianDate').textContent = `Gregorian: ${gDate.toLocaleDateString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US')}`;
+            } else {
+                document.getElementById('convertedGregorianDate').textContent = 'براہ کرم تمام ہجری تاریخ درج کریں۔';
+            }
+        }
+        let userLocation = null;
+        let map = null;
+        let marker = null;
+        let qiblaLayer = null;
+        function getPrayerTimes() {
+            if (!navigator.geolocation) {
+                alert('آپ کا براؤزر جغرافیائی محل وقوع کی حمایت نہیں کرتا ہے۔ (Your browser does not support geolocation.)');
+                return;
+            }
+            const cityInput = document.getElementById('prayerLocation').value;
+            if (cityInput) {
+                alert('شہر کے نام سے اوقات نماز حاصل کرنے کے لیے ایک جغرافیائی لوکیشن سروس کی ضرورت ہے۔ فی الحال آپ کے موجودہ مقام کا استعمال کیا جائے گا۔ (Getting prayer times by city name requires a geocoding service. Your current location will be used for now.)');
+            }
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    userLocation = {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    };
+                    const date = new Date();
+                    const params = adhan.CalculationMethod[document.getElementById('calculationMethod').value]();
+                    const coordinates = new adhan.Coordinates(userLocation.latitude, userLocation.longitude);
+                    const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
+                    const times = {
+                        Fajr: prayerTimes.fajr.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        Sunrise: prayerTimes.sunrise.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        Dhuhr: prayerTimes.dhuhr.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        Asr: prayerTimes.asr.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        Maghrib: prayerTimes.maghrib.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                        Isha: prayerTimes.isha.toLocaleTimeString(currentLanguage === 'ur' ? 'ur-PK' : 'en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }),
+                    };
+                    let prayerHtml = '';
+                    for (const time in times) {
+                        prayerHtml += `<div><strong>${time}:</strong> ${times[time]}</div>`;
+                    }
+                    document.getElementById('prayerTimesDisplay').innerHTML = prayerHtml;
+                    updateQiblaDirection(userLocation);
+                },
+                (error) => {
+                    document.getElementById('prayerTimesDisplay').innerHTML = `اوقاتِ نماز حاصل کرنے میں خرابی: ${error.message} (Error getting prayer times: ${error.message})`;
+                    document.getElementById('qiblaInfo').textContent = 'مقام کی اجازت درکار ہے۔ (Location permission required.)';
+                    console.error("Geolocation Error:", error);
+                }, {
+                enableHighAccuracy: true,
+                timeout: 10000,
+                maximumAge: 0
+            }
+            );
+        }
+        function initializeQiblaMap() {
+            if (map) {
+                map.remove();
+            }
+            map = L.map('qiblaMap').setView([0, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+            marker = L.marker([0, 0]).addTo(map);
+            qiblaLayer = L.layerGroup().addTo(map);
+        }
+        function updateQiblaDirection(location) {
+            if (!location) {
+                document.getElementById('qiblaInfo').textContent = 'مقام دستیاب نہیں ہے۔ (Location not available.)';
+                return;
+            }
+            const qiblaAngle = adhan.Qibla(new adhan.Coordinates(location.latitude, location.longitude));
+            document.getElementById('qiblaArrow').style.transform = `rotate(${qiblaAngle}deg)`;
+            document.getElementById('qiblaInfo').textContent = `قبلہ کی سمت: ${qiblaAngle.toFixed(2)}° (شمال سے) (Qibla Direction: ${qiblaAngle.toFixed(2)}° from North)`;
+            if (map && marker) {
+                map.setView([location.latitude, location.longitude], 10);
+                marker.setLatLng([location.latitude, location.longitude]);
+                qiblaLayer.clearLayers();
+                const kaabaLat = 21.4225;
+                const kaabaLon = 39.8262;
+                const line = L.polyline([
+                    [location.latitude, location.longitude],
+                    [kaabaLat, kaabaLon]
+                ], {
+                    color: 'red',
+                    weight: 3,
+                    opacity: 0.7
+                }).addTo(qiblaLayer);
+            }
+        }
+        function exportData() {
+            const data = {
+                prophetMuhammadBirthDateGregorian: prophetMuhammadBirthDateGregorian ? prophetMuhammadBirthDateGregorian.toISOString() : null,
+                prophetMuhammadDeathDateGregorian: prophetMuhammadDeathDateGregorian ? prophetMuhammadDeathDateGregorian.toISOString() : null,
+                theme: currentTheme,
+                fontSize: currentFontSize,
+                language: currentLanguage,
+                sampleEntries: [{
+                    name: "Default Birth Date (Approx. Gregorian)",
+                    date: defaultBirthDateGregorian.toISOString()
+                }, {
+                    name: "Default Death Date (Approx. Gregorian)",
+                    date: defaultDeathDateGregorian.toISOString()
+                }, {
+                    name: "Hijri Birth Date (12 Rabi' al-Awwal, approx.)",
+                    hijri: {
+                        year: 1,
+                        month: 3,
+                        day: 12
+                    }
+                }, {
+                    name: "Hijri Death Date (13 Rabi' al-Awwal, approx.)",
+                    hijri: {
+                        year: 11,
+                        month: 3,
+                        day: 13
+                    }
+                },],
+            };
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], {
+                type: 'application/json'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'prophet_islamic_hub_data.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (importedData.prophetMuhammadBirthDateGregorian) {
+                        prophetMuhammadBirthDateGregorian = new Date(importedData.prophetMuhammadBirthDateGregorian);
+                    }
+                    if (importedData.prophetMuhammadDeathDateGregorian) {
+                        prophetMuhammadDeathDateGregorian = new Date(importedData.prophetMuhammadDeathDateGregorian);
+                    }
+                    if (importedData.theme) {
+                        setTheme(importedData.theme);
+                    }
+                    if (importedData.fontSize) {
+                        currentFontSize = importedData.fontSize;
+                        document.body.style.fontSize = `${currentFontSize}px`;
+                        document.querySelectorAll('.countdown-display, .event-info, .hadith-text, .asma-name, .prophet-name, .qibla-display').forEach(el => {
+                            el.style.fontSize = `${currentFontSize * 0.9}px`;
+                        });
+                        document.querySelectorAll('.total-info').forEach(el => {
+                            el.style.fontSize = `${currentFontSize * 0.75}px`;
+                        });
+                    }
+                    if (importedData.language) {
+                        currentLanguage = importedData.language;
+                        document.getElementById('languageSelect').value = currentLanguage;
+                    }
+                    saveData();
+                    populateSettingsModal();
+                    translatePage();
+                    updateCountdown();
+                    alert(translations[currentLanguage]["ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)"]);
+                } catch (error) {
+                    alert(translations[currentLanguage]["فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)"]);
+                    console.error('Import error:', error);
+                }
+            };
+            reader.onerror = function () {
+                alert(translations[currentLanguage]["فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)"]);
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+        function saveData() {
+            const data = {
+                prophetMuhammadBirthDateGregorian: prophetMuhammadBirthDateGregorian ? prophetMuhammadBirthDateGregorian.toISOString() : null,
+                prophetMuhammadDeathDateGregorian: prophetMuhammadDeathDateGregorian ? prophetMuhammadDeathDateGregorian.toISOString() : null,
+                theme: currentTheme,
+                fontSize: currentFontSize,
+                language: currentLanguage
+            };
+            localStorage.setItem(APP_DATA_KEY, JSON.stringify(data));
+        }
+        function loadData() {
+            const storedData = localStorage.getItem(APP_DATA_KEY);
+            if (storedData) {
+                try {
+                    const data = JSON.parse(storedData);
+                    prophetMuhammadBirthDateGregorian = data.prophetMuhammadBirthDateGregorian ? new Date(data.prophetMuhammadBirthDateGregorian) : defaultBirthDateGregorian;
+                    prophetMuhammadDeathDateGregorian = data.prophetMuhammadDeathDateGregorian ? new Date(data.prophetMuhammadDeathDateGregorian) : defaultDeathDateGregorian;
+                    currentTheme = data.theme || 'light';
+                    currentFontSize = data.fontSize || 16;
+                    currentLanguage = data.language || 'ur';
+                } catch (e) {
+                    console.error("Error parsing stored data, using defaults:", e);
+                    resetToDefaults();
+                }
+            } else {
+                resetToDefaults();
+            }
+            setTheme(currentTheme);
+            document.body.style.fontSize = `${currentFontSize}px`;
+            document.querySelectorAll('.countdown-display, .event-info, .hadith-text, .asma-name, .prophet-name, .qibla-display').forEach(el => {
+                el.style.fontSize = `${currentFontSize * 0.9}px`;
+            });
+            document.querySelectorAll('.total-info').forEach(el => {
+                el.style.fontSize = `${currentFontSize * 0.75}px`;
+            });
+            document.getElementById('languageSelect').value = currentLanguage;
+            populateSettingsModal();
+            translatePage();
+        }
+        function resetToDefaults() {
+            prophetMuhammadBirthDateGregorian = defaultBirthDateGregorian;
+            prophetMuhammadDeathDateGregorian = defaultDeathDateGregorian;
+            currentTheme = 'light';
+            currentFontSize = 16;
+            currentLanguage = 'ur';
+        }
+        function populateSettingsModal() {
+            const birthDateInput = document.getElementById('birthDateInput');
+            const deathDateInput = document.getElementById('deathDateInput');
+            if (prophetMuhammadBirthDateGregorian) {
+                birthDateInput.value = prophetMuhammadBirthDateGregorian.toISOString().split('T')[0];
+            }
+            if (prophetMuhammadDeathDateGregorian) {
+                deathDateInput.value = prophetMuhammadDeathDateGregorian.toISOString().split('T')[0];
+            }
+        }
+        document.getElementById('dateSettingsForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const birthDateInput = document.getElementById('birthDateInput').value;
+            const deathDateInput = document.getElementById('deathDateInput').value;
+            if (birthDateInput) {
+                prophetMuhammadBirthDateGregorian = new Date(birthDateInput + 'T00:00:00Z');
+            }
+            if (deathDateInput) {
+                prophetMuhammadDeathDateGregorian = new Date(deathDateInput + 'T00:00:00Z');
+            }
+            saveData();
+            updateCountdown();
+            const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
+            modal.hide();
+        });
+        function shareContent(elementId, title) {
+            const text = document.getElementById(elementId).innerText;
+            if (navigator.share) {
+                navigator.share({
+                    title: title,
+                    text: text + '\n\n' + window.location.href,
+                    url: window.location.href,
+                }).then(() => {
+                    console.log('Shared successfully');
+                }).catch((error) => {
+                    console.error('Error sharing:', error);
+                });
+            } else {
+                alert(`You can copy this ${title}:\n\n${text}\n\nVisit: ${window.location.href}`);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            populateTimeline();
+            populateAsmaUlHusna();
+            populateProphetNames();
+            displayHadithOfTheDay();
+            initializeQiblaMap();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            getPrayerTimes();
+        });
+    </script>
+<script type="module">
+  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+  const swUrl = './sw.js';
+  const wb = new Workbox(swUrl);
+
+  wb.addEventListener('waiting', () => {
+    console.log('A new service worker is waiting to activate.');
+    wb.messageSW({ type: 'SKIP_WAITING' });
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('The new service worker is now in control. Reloading page for updates...');
+    window.location.reload();
+  });
+
+  wb.register();
+</script>
+
+</body>
+
+</html>
