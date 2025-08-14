@@ -461,26 +461,16 @@ if (isset($_POST['action'])) {
         exit();
     }
 }
-// --- START: Replace from here ---
-
 if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || isset($_GET['action'])) {
-
     $action = $_POST['action'] ?? $_GET['action'];
-
-    // Admin-only DB Actions
     if ($action === 'backup_db' || $action === 'restore_db') {
         if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
             die("Unauthorized access.");
         }
-
         if ($action === 'backup_db') {
             $backup_file = 'db_backup_' . $dbname . '_' . date("Y-m-d_H-i-s") . '.sql';
-
-            // NOTE: mysqldump must be available in the system's PATH.
             $command = "mysqldump --user={$username} --password={$password} --host={$servername} {$dbname} > {$backup_file}";
-
             system($command, $result_code);
-
             if ($result_code === 0) {
                 header('Content-Description: File Transfer');
                 header('Content-Type: application/octet-stream');
@@ -490,22 +480,17 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || isset(
                 header('Pragma: public');
                 header('Content-Length: ' . filesize($backup_file));
                 readfile($backup_file);
-                unlink($backup_file); // Delete file from server after download
+                unlink($backup_file);
                 exit;
             } else {
                 die("Error creating database backup.");
             }
         }
-
         if ($action === 'restore_db') {
             if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] == UPLOAD_ERR_OK) {
                 $file_tmp_path = $_FILES['backup_file']['tmp_name'];
-
-                // NOTE: mysql client must be available in the system's PATH.
                 $command = "mysql --user={$username} --password={$password} --host={$servername} {$dbname} < {$file_tmp_path}";
-
                 system($command, $result_code);
-
                 if ($result_code === 0) {
                     echo "<script>alert('Database restored successfully!'); window.location.href='index.php';</script>";
                 } else {
@@ -518,16 +503,12 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || isset(
             }
         }
     }
-
-    // Existing User/Admin Auth Actions
     if ($action === 'register_user') {
         $username = $_POST['username'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $email = $_POST['email'];
-
         $stmt = $conn->prepare("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $username, $password, $email);
-
         if ($stmt->execute()) {
             echo json_encode(['success' => true, 'message' => 'Registration successful. Please log in.']);
         } else {
@@ -540,30 +521,25 @@ if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || isset(
         $stmt->close();
         exit();
     } elseif ($action === 'login') {
-        // Your existing login code...
         $username = $_POST['username'];
         $password = $_POST['password'];
         $is_admin_login = isset($_POST['is_admin']) && $_POST['is_admin'] === 'true';
-
         $table = $is_admin_login ? 'admins' : 'users';
         $stmt = $conn->prepare("SELECT id, password_hash, username FROM {$table} WHERE username = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
         $user = $result->fetch_assoc();
-
         if ($user && password_verify($password, $user['password_hash'])) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['role'] = $is_admin_login ? 'admin' : 'user';
-
             if (!$is_admin_login) {
                 $update_stmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
                 $update_stmt->bind_param("i", $user['id']);
                 $update_stmt->execute();
                 $update_stmt->close();
             }
-
             echo json_encode(['success' => true, 'message' => 'Login successful.', 'role' => $_SESSION['role']]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Invalid username or password.']);
@@ -1538,6 +1514,15 @@ if (isset($_GET['api'])) {
                 padding: 8px;
             }
         }
+
+        .custom-popover {
+            --bs-popover-bg: #2c394b;
+            --bs-popover-header-bg: #1f2833;
+            --bs-popover-header-color: white;
+            --bs-popover-body-color: #e0e0e0;
+            --bs-popover-border-color: #0f4c75;
+            --bs-popover-arrow-border: #0f4c75;
+        }
     </style>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -1607,8 +1592,8 @@ if (isset($_GET['api'])) {
                                 data-translate-key="یوزر ڈیش بورڈ">یوزر ڈیش بورڈ</a></li>
                     <?php endif; ?>
                     <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'): ?>
-<li class="nav-item"><a class="nav-link" href="index.php?action=backup_db" data-translate-key="بیک اپ">بیک اپ</a></li>
-<li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#restoreDbModal" data-translate-key="بحال کریں">بحال کریں</a></li>
+                        <li class="nav-item"><a class="nav-link" href="index.php?action=backup_db" data-translate-key="بیک اپ">بیک اپ</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#restoreDbModal" data-translate-key="بحال کریں">بحال کریں</a></li>
                     <?php endif; ?>
                     <li class="nav-item"><a class="nav-link" href="hadith.php" data-translate-key="تمام احادیث">All Hadiths</a></li>
                     <li class="nav-item"><a class="nav-link" href="quran.php" data-translate-key="تمام قرآنی آیات">All Quran Verses</a></li>
@@ -2752,7 +2737,7 @@ if (isset($_GET['api'])) {
 
         function updateUpcomingAnniversaries() {
             const today = new Date();
-            const todayHijri = gregorianToHijri(today);
+            const todayHijri = getHijriDate(today);
             let mawlidYear = todayHijri.year;
             let mawlidDate = hijriToGregorian(mawlidYear, MAWLID_MONTH, MAWLID_DAY);
             if (mawlidDate.getTime() < today.getTime()) {
@@ -2773,7 +2758,7 @@ if (isset($_GET['api'])) {
 
         function displaySeerahEventToday() {
             const today = new Date();
-            const todayHijri = gregorianToHijri(today);
+            const todayHijri = getHijriDate(today);
             const seerahEventTodayElement = document.getElementById("seerahEventToday");
             let found = false;
             let eventToday = null;
@@ -3019,7 +3004,7 @@ if (isset($_GET['api'])) {
             const gregorianDateStr = document.getElementById('gregorianToHijriInput').value;
             if (gregorianDateStr) {
                 const gDate = new Date(gregorianDateStr + 'T00:00:00Z');
-                const hDate = gregorianToHijri(gDate);
+                const hDate = getHijriDate(gDate);
                 const hijriMonthName = currentLanguage === 'ur' ? hijriMonths[hDate.month - 1] : hijriMonthsEn[hDate.month - 1];
                 document.getElementById('convertedHijriDate').textContent = `${hDate.day} ${hijriMonthName}, ${hDate.year} ہجری`;
             } else {
@@ -3387,6 +3372,8 @@ if (isset($_GET['api'])) {
             }
             let firstDayOfMonthGregorian = hijriToGregorian(displayHijriYear, displayHijriMonth, 1);
             let firstDayOfWeek = firstDayOfMonthGregorian.getDay();
+            const dayOfWeekCorrection = -1;
+            firstDayOfWeek = (firstDayOfWeek + dayOfWeekCorrection + 7) % 7;
             let daysInMonth = (displayHijriMonth % 2 !== 0 || displayHijriMonth === 12) ? 30 : 29;
             for (let i = 0; i < firstDayOfWeek; i++) {
                 const emptyDiv = document.createElement('div');
@@ -3406,6 +3393,7 @@ if (isset($_GET['api'])) {
                 dayDiv.appendChild(gregorianSpan);
                 if (day === todayHijri.day && displayHijriMonth === todayHijri.month && displayHijriYear === todayHijri.year) {
                     dayDiv.classList.add('today');
+                    gregorianSpan.textContent = todayGregorian.getDate();
                 }
                 const eventsForThisDay = allCalendarEvents.filter(event =>
                     parseInt(event.hijri_day) === day && parseInt(event.hijri_month) === displayHijriMonth
@@ -3415,26 +3403,22 @@ if (isset($_GET['api'])) {
                     eventDot.className = 'event-dot';
                     dayDiv.appendChild(eventDot);
                     dayDiv.classList.add('highlighted');
-                    dayDiv.onclick = () => {
-                        let combinedDescription = '';
-                        eventsForThisDay.forEach(e => {
-                            combinedDescription += `<strong>${currentLanguage === 'ur' ? e.event_title_ur : e.event_title_en}</strong><br>`;
-                            if (e.description_ur || e.description_en) {
-                                combinedDescription += `<p>${currentLanguage === 'ur' ? e.description_ur : e.description_en}</p>`;
-                            }
-                        });
-                        showCalendarEventDetail({
-                            event_title_ur: `${day} ${hijriMonths[displayHijriMonth - 1]}`,
-                            event_title_en: `${day} ${hijriMonthsEn[displayHijriMonth - 1]}`,
-                            hijri_day: day,
-                            hijri_month: displayHijriMonth,
-                            description_ur: combinedDescription,
-                            description_en: combinedDescription
-                        });
-                    };
+                    const popoverTitle = eventsForThisDay.map(e => currentLanguage === 'ur' ? e.event_title_ur : e.event_title_en).join('<hr class="my-1">');
+                    const popoverContent = eventsForThisDay.map(e => currentLanguage === 'ur' ? e.description_ur : e.description_en).join('<hr class="my-1">');
+                    dayDiv.setAttribute('data-bs-toggle', 'popover');
+                    dayDiv.setAttribute('data-bs-trigger', 'hover focus');
+                    dayDiv.setAttribute('data-bs-html', 'true');
+                    dayDiv.setAttribute('data-bs-title', popoverTitle);
+                    dayDiv.setAttribute('data-bs-content', popoverContent);
+                    dayDiv.setAttribute('data-bs-placement', 'top');
+                    dayDiv.setAttribute('data-bs-custom-class', 'custom-popover');
                 }
                 calendarGrid.appendChild(dayDiv);
             }
+            const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
+            const popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl);
+            });
         }
 
         function loadQuizQuestion() {
@@ -3564,7 +3548,9 @@ if (isset($_GET['api'])) {
         }
 
         function getHijriDate(date) {
-            return gregorianToHijri(date);
+            const adjustedDate = new Date(date);
+            adjustedDate.setDate(date.getDate() - 1);
+            return gregorianToHijri(adjustedDate);
         }
 
         function changeMonth(delta) {
