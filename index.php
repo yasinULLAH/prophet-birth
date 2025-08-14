@@ -1,26 +1,21 @@
 <?php
 $session_path = __DIR__ . '/sessions';
 if (!is_dir($session_path)) {
-    mkdir($session_path, 0777, true); // Create a 'sessions' folder in your project
+    mkdir($session_path, 0777, true);
 }
 session_save_path($session_path);
 session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
 $servername = "localhost";
 $username = "root";
 $password = "root";
 $dbname = "islamic_hub";
-
 $conn = new mysqli($servername, $username, $password, $dbname);
-
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Data for initial population
 $sample_data_configs = [
     'hadiths' => [
         'fields' => ['hadith_ur', 'hadith_en', 'source_ur', 'source_en'],
@@ -122,7 +117,6 @@ $sample_data_configs = [
         ]
     ]
 ];
-
 function createTablesAndInsertSampleData($conn, $sample_data_configs)
 {
     $tables = [
@@ -247,24 +241,18 @@ function createTablesAndInsertSampleData($conn, $sample_data_configs)
             audio_url VARCHAR(255) NOT NULL
         )"
     ];
-
     foreach ($tables as $tableName => $createSql) {
         $conn->query($createSql);
-
-        // Check if table is empty and insert sample data
         $check_empty_sql = "SELECT COUNT(*) as count FROM {$tableName}";
         $result = $conn->query($check_empty_sql);
         $row = $result->fetch_assoc();
-
         if ($row['count'] == 0 && isset($sample_data_configs[$tableName])) {
             $config = $sample_data_configs[$tableName];
             $fields = $config['fields'];
             $placeholders = implode(', ', array_fill(0, count($fields), '?'));
             $columns = implode(', ', $fields);
-
             $insertSql = "INSERT INTO {$tableName} ({$columns}) VALUES ({$placeholders})";
             $stmt = $conn->prepare($insertSql);
-
             foreach ($config['data'] as $dataRow) {
                 $types = '';
                 foreach ($dataRow as $val) {
@@ -279,10 +267,6 @@ function createTablesAndInsertSampleData($conn, $sample_data_configs)
         }
     }
 }
-
-// Ensure tables exist and populate with sample data if empty
-createTablesAndInsertSampleData($conn, $sample_data_configs);
-
 function fetchData($conn, $table, $where = '', $params = [])
 {
     $sql = "SELECT * FROM " . $table;
@@ -310,7 +294,6 @@ function fetchData($conn, $table, $where = '', $params = [])
     $stmt->close();
     return $data;
 }
-
 function handleAdminCrud($conn)
 {
     if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
@@ -318,28 +301,22 @@ function handleAdminCrud($conn)
         echo json_encode(['error' => 'Unauthorized access. Admin privileges required.']);
         exit();
     }
-
     $data = json_decode(file_get_contents('php://input'), true);
     $action = $data['action'] ?? '';
     $table = $data['table'] ?? '';
     $id = $data['id'] ?? null;
     $fields = $data['fields'] ?? [];
-
     $response = ['success' => false, 'message' => 'Invalid action or table.'];
-
     switch ($action) {
         case 'create':
-            // Handle password hashing for users/admins
             if (($table === 'users' || $table === 'admins') && isset($fields['password'])) {
                 $fields['password_hash'] = password_hash($fields['password'], PASSWORD_DEFAULT);
                 unset($fields['password']);
             }
-
             $columns = implode(', ', array_keys($fields));
             $placeholders = implode(', ', array_fill(0, count($fields), '?'));
             $sql = "INSERT INTO {$table} ({$columns}) VALUES ({$placeholders})";
             $stmt = $conn->prepare($sql);
-
             if ($stmt) {
                 $types = '';
                 foreach ($fields as $col => $val) {
@@ -348,7 +325,6 @@ function handleAdminCrud($conn)
                     else $types .= 's';
                 }
                 $stmt->bind_param($types, ...array_values($fields));
-
                 if ($stmt->execute()) {
                     $response = ['success' => true, 'message' => 'Record created successfully.', 'id' => $conn->insert_id];
                 } else {
@@ -359,7 +335,6 @@ function handleAdminCrud($conn)
                 $response = ['success' => false, 'message' => 'Failed to prepare statement: ' . $conn->error];
             }
             break;
-
         case 'read':
             $data = fetchData($conn, $table);
             if ($table === 'quiz_questions') {
@@ -375,26 +350,20 @@ function handleAdminCrud($conn)
             }
             $response = ['success' => true, 'data' => $data];
             break;
-
-        // Inside the handleAdminCrud function, within the switch statement
-
         case 'update':
             if (!$id || empty($fields)) {
                 $response = ['success' => false, 'message' => 'Missing ID or fields for update.'];
                 break;
             }
-            // Handle password hashing for users/admins if 'password' field is provided
             if (($table === 'users' || $table === 'admins') && isset($fields['password']) && !empty($fields['password'])) {
                 $fields['password_hash'] = password_hash($fields['password'], PASSWORD_DEFAULT);
-                unset($fields['password']); // Remove raw password from fields array
+                unset($fields['password']);
             } else {
-                unset($fields['password']); // Ensure empty password doesn't overwrite hash
+                unset($fields['password']);
             }
-
             $setClauses = [];
             $params = [];
             $types = '';
-
             foreach ($fields as $col => $val) {
                 $setClauses[] = "{$col} = ?";
                 $params[] = $val;
@@ -402,13 +371,10 @@ function handleAdminCrud($conn)
                 elseif (is_double($val)) $types .= 'd';
                 else $types .= 's';
             }
-
             $params[] = $id;
             $types .= 'i';
-
             $setSql = implode(', ', $setClauses);
             $sql = "UPDATE {$table} SET {$setSql} WHERE id = ?";
-
             $stmt = $conn->prepare($sql);
             if ($stmt) {
                 $stmt->bind_param($types, ...$params);
@@ -422,7 +388,6 @@ function handleAdminCrud($conn)
                 $response = ['success' => false, 'message' => 'Failed to prepare statement: ' . $conn->error];
             }
             break;
-
         case 'delete':
             if (!$id) {
                 $response = ['success' => false, 'message' => 'Missing ID for deletion.'];
@@ -446,9 +411,116 @@ function handleAdminCrud($conn)
     echo json_encode($response);
     exit();
 }
-
 if (isset($_POST['action'])) {
     if ($_POST['action'] === 'register_user') {
+        $username = $_POST['username'];
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $email = $_POST['email'];
+        $stmt = $conn->prepare("INSERT INTO users (username, password_hash, email) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $password, $email);
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Registration successful. Please log in.']);
+        } else {
+            if ($conn->errno == 1062) {
+                echo json_encode(['success' => false, 'message' => 'Registration failed. Username or Email might already exist.']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Registration failed: ' . $stmt->error]);
+            }
+        }
+        $stmt->close();
+        exit();
+    } elseif ($_POST['action'] === 'login') {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $is_admin_login = isset($_POST['is_admin']) && $_POST['is_admin'] === 'true';
+        $table = $is_admin_login ? 'admins' : 'users';
+        $stmt = $conn->prepare("SELECT id, password_hash, username FROM {$table} WHERE username = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $user = $result->fetch_assoc();
+        if ($user && password_verify($password, $user['password_hash'])) {
+            $_SESSION['user_id'] = $user['id'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $is_admin_login ? 'admin' : 'user';
+            if (!$is_admin_login) {
+                $update_stmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+                $update_stmt->bind_param("i", $user['id']);
+                $update_stmt->execute();
+                $update_stmt->close();
+            }
+            echo json_encode(['success' => true, 'message' => 'Login successful.', 'role' => $_SESSION['role']]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Invalid username or password.']);
+        }
+        $stmt->close();
+        exit();
+    } elseif ($_POST['action'] === 'logout') {
+        session_destroy();
+        echo json_encode(['success' => true, 'message' => 'Logged out successfully.']);
+        exit();
+    }
+}
+// --- START: Replace from here ---
+
+if (($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) || isset($_GET['action'])) {
+
+    $action = $_POST['action'] ?? $_GET['action'];
+
+    // Admin-only DB Actions
+    if ($action === 'backup_db' || $action === 'restore_db') {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            die("Unauthorized access.");
+        }
+
+        if ($action === 'backup_db') {
+            $backup_file = 'db_backup_' . $dbname . '_' . date("Y-m-d_H-i-s") . '.sql';
+
+            // NOTE: mysqldump must be available in the system's PATH.
+            $command = "mysqldump --user={$username} --password={$password} --host={$servername} {$dbname} > {$backup_file}";
+
+            system($command, $result_code);
+
+            if ($result_code === 0) {
+                header('Content-Description: File Transfer');
+                header('Content-Type: application/octet-stream');
+                header('Content-Disposition: attachment; filename="' . basename($backup_file) . '"');
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . filesize($backup_file));
+                readfile($backup_file);
+                unlink($backup_file); // Delete file from server after download
+                exit;
+            } else {
+                die("Error creating database backup.");
+            }
+        }
+
+        if ($action === 'restore_db') {
+            if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] == UPLOAD_ERR_OK) {
+                $file_tmp_path = $_FILES['backup_file']['tmp_name'];
+
+                // NOTE: mysql client must be available in the system's PATH.
+                $command = "mysql --user={$username} --password={$password} --host={$servername} {$dbname} < {$file_tmp_path}";
+
+                system($command, $result_code);
+
+                if ($result_code === 0) {
+                    echo "<script>alert('Database restored successfully!'); window.location.href='index.php';</script>";
+                } else {
+                    echo "<script>alert('Error restoring database.'); window.location.href='index.php';</script>";
+                }
+                exit;
+            } else {
+                echo "<script>alert('File upload failed.'); window.location.href='index.php';</script>";
+                exit;
+            }
+        }
+    }
+
+    // Existing User/Admin Auth Actions
+    if ($action === 'register_user') {
         $username = $_POST['username'];
         $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
         $email = $_POST['email'];
@@ -467,7 +539,8 @@ if (isset($_POST['action'])) {
         }
         $stmt->close();
         exit();
-    } elseif ($_POST['action'] === 'login') {
+    } elseif ($action === 'login') {
+        // Your existing login code...
         $username = $_POST['username'];
         $password = $_POST['password'];
         $is_admin_login = isset($_POST['is_admin']) && $_POST['is_admin'] === 'true';
@@ -497,32 +570,27 @@ if (isset($_POST['action'])) {
         }
         $stmt->close();
         exit();
-    } elseif ($_POST['action'] === 'logout') {
+    } elseif ($action === 'logout') {
         session_destroy();
         echo json_encode(['success' => true, 'message' => 'Logged out successfully.']);
         exit();
     }
 }
-
 if (isset($_GET['api'])) {
     header('Content-Type: application/json');
     switch ($_GET['api']) {
         case 'get_daily_content':
             $response = [];
-
             $hadiths = fetchData($conn, 'hadiths');
             $day_of_year = (new DateTime())->format('z');
             $hadith_index = count($hadiths) > 0 ? ($day_of_year % count($hadiths)) : 0;
             $response['hadith_of_the_day'] = $hadiths[$hadith_index] ?? null;
-
             $quran_verses = fetchData($conn, 'quran_verses');
             $verse_index = count($quran_verses) > 0 ? ($day_of_year % count($quran_verses)) : 0;
             $response['quran_verse_of_the_day'] = $quran_verses[$verse_index] ?? null;
-
             $daily_duas = fetchData($conn, 'daily_duas');
             $dua_index = count($daily_duas) > 0 ? ($day_of_year % count($daily_duas)) : 0;
             $response['dua_of_the_day'] = $daily_duas[$dua_index] ?? null;
-
             $quiz_questions = fetchData($conn, 'quiz_questions');
             $question_index = count($quiz_questions) > 0 ? ($day_of_year % count($quiz_questions)) : 0;
             if (isset($quiz_questions[$question_index])) {
@@ -532,23 +600,18 @@ if (isset($_GET['api'])) {
             } else {
                 $response['quiz_question_of_the_day'] = null;
             }
-
             $seerah_events = fetchData($conn, 'seerah_events');
             foreach ($seerah_events as &$event) {
                 $event['gregorian_date_iso'] = (new DateTime($event['gregorian_date']))->format(DATE_ISO8601);
             }
             $response['seerah_events'] = $seerah_events;
-
             $response['asma_ul_husna'] = fetchData($conn, 'asma_ul_husna');
             $response['prophet_names'] = fetchData($conn, 'prophet_names');
-
             echo json_encode($response);
             break;
-
         case 'crud':
             handleAdminCrud($conn);
             break;
-
         case 'get_calendar_events':
             $sql = "SELECT * FROM islamic_calendar_events";
             $result = $conn->query($sql);
@@ -560,7 +623,6 @@ if (isset($_GET['api'])) {
             }
             echo json_encode($events);
             break;
-
         case 'get_user_data':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -570,17 +632,14 @@ if (isset($_GET['api'])) {
             $user_id = $_SESSION['user_id'];
             $user_data = fetchData($conn, 'users', 'id = ?', [$user_id]);
             $user_data = $user_data[0] ?? null;
-
             if ($user_data) {
                 $user_data['settings'] = json_decode($user_data['settings'], true);
                 $user_data['prayer_locations'] = fetchData($conn, 'user_prayer_locations', 'user_id = ?', [$user_id]);
                 $user_data['daily_zikr'] = fetchData($conn, 'user_daily_zikr', 'user_id = ?', [$user_id]);
                 $user_data['favorites'] = fetchData($conn, 'user_favorites', 'user_id = ?', [$user_id]);
             }
-
             echo json_encode(['success' => true, 'data' => $user_data]);
             break;
-
         case 'save_user_settings':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -590,7 +649,6 @@ if (isset($_GET['api'])) {
             $user_id = $_SESSION['user_id'];
             $settings_data = json_decode(file_get_contents('php://input'), true);
             $settings_json = json_encode($settings_data['settings']);
-
             $stmt = $conn->prepare("UPDATE users SET settings = ? WHERE id = ?");
             $stmt->bind_param("si", $settings_json, $user_id);
             if ($stmt->execute()) {
@@ -600,7 +658,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'add_user_prayer_location':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -613,7 +670,6 @@ if (isset($_GET['api'])) {
             $latitude = $data['latitude'];
             $longitude = $data['longitude'];
             $calculation_method = $data['calculation_method'];
-
             $stmt = $conn->prepare("INSERT INTO user_prayer_locations (user_id, location_name, latitude, longitude, calculation_method) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("isdds", $user_id, $location_name, $latitude, $longitude, $calculation_method);
             if ($stmt->execute()) {
@@ -623,7 +679,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'delete_user_prayer_location':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -633,7 +688,6 @@ if (isset($_GET['api'])) {
             $user_id = $_SESSION['user_id'];
             $data = json_decode(file_get_contents('php://input'), true);
             $location_id = $data['location_id'];
-
             $stmt = $conn->prepare("DELETE FROM user_prayer_locations WHERE id = ? AND user_id = ?");
             $stmt->bind_param("ii", $location_id, $user_id);
             if ($stmt->execute()) {
@@ -643,7 +697,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'add_favorite':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -654,13 +707,11 @@ if (isset($_GET['api'])) {
             $data = json_decode(file_get_contents('php://input'), true);
             $item_type = $data['item_type'];
             $item_id = $data['item_id'];
-
             $existing = fetchData($conn, 'user_favorites', 'user_id = ? AND item_type = ? AND item_id = ?', [$user_id, $item_type, $item_id]);
             if (!empty($existing)) {
                 echo json_encode(['success' => false, 'message' => 'Already favorited.']);
                 break;
             }
-
             $stmt = $conn->prepare("INSERT INTO user_favorites (user_id, item_type, item_id) VALUES (?, ?, ?)");
             $stmt->bind_param("isi", $user_id, $item_type, $item_id);
             if ($stmt->execute()) {
@@ -670,7 +721,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'remove_favorite':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -681,7 +731,6 @@ if (isset($_GET['api'])) {
             $data = json_decode(file_get_contents('php://input'), true);
             $item_type = $data['item_type'];
             $item_id = $data['item_id'];
-
             $stmt = $conn->prepare("DELETE FROM user_favorites WHERE user_id = ? AND item_type = ? AND item_id = ?");
             $stmt->bind_param("isi", $user_id, $item_type, $item_id);
             if ($stmt->execute()) {
@@ -691,7 +740,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'add_user_zikr':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -704,7 +752,6 @@ if (isset($_GET['api'])) {
             $zikr_text_english = $data['zikr_text_english'];
             $zikr_text_urdu = $data['zikr_text_urdu'];
             $daily_target = $data['daily_target'];
-
             $stmt = $conn->prepare("INSERT INTO user_daily_zikr (user_id, zikr_text_arabic, zikr_text_english, zikr_text_urdu, daily_target) VALUES (?, ?, ?, ?, ?)");
             $stmt->bind_param("isssi", $user_id, $zikr_text_arabic, $zikr_text_english, $zikr_text_urdu, $daily_target);
             if ($stmt->execute()) {
@@ -714,7 +761,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         case 'delete_user_zikr':
             if (!isset($_SESSION['user_id'])) {
                 http_response_code(401);
@@ -724,7 +770,6 @@ if (isset($_GET['api'])) {
             $user_id = $_SESSION['user_id'];
             $data = json_decode(file_get_contents('php://input'), true);
             $zikr_id = $data['zikr_id'];
-
             $stmt = $conn->prepare("DELETE FROM user_daily_zikr WHERE id = ? AND user_id = ?");
             $stmt->bind_param("ii", $zikr_id, $user_id);
             if ($stmt->execute()) {
@@ -734,7 +779,6 @@ if (isset($_GET['api'])) {
             }
             $stmt->close();
             break;
-
         default:
             echo json_encode(['error' => 'Invalid API endpoint']);
             break;
@@ -893,7 +937,7 @@ if (isset($_GET['api'])) {
         .timeline {
             display: inline-block;
             position: relative;
-            padding-top: 50px;
+            padding-top: 1px;
         }
 
         .timeline::before {
@@ -1500,6 +1544,27 @@ if (isset($_GET['api'])) {
 </head>
 
 <body>
+    <div class="modal fade" id="restoreDbModal" tabindex="-1" aria-labelledby="restoreDbModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="restoreDbModalLabel">Restore Database</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-danger">Warning: This will overwrite the current database. Proceed with caution.</p>
+                    <form action="index.php" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="action" value="restore_db">
+                        <div class="mb-3">
+                            <label for="backup_file" class="form-label">Select SQL Backup File</label>
+                            <input class="form-control bg-secondary text-white" type="file" name="backup_file" id="backup_file" accept=".sql" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Upload and Restore</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">صلی اللہ علیہ و سلم</a>
@@ -1541,14 +1606,12 @@ if (isset($_GET['api'])) {
                         <li class="nav-item"><a class="nav-link" href="?page=user_dashboard"
                                 data-translate-key="یوزر ڈیش بورڈ">یوزر ڈیش بورڈ</a></li>
                     <?php endif; ?>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="exportData()"
-                            data-translate-key="بیک اپ">بیک اپ</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="document.getElementById('importFile').click()"
-                            data-translate-key="بحال کریں">بحال کریں</a>
-                        <input type="file" id="importFile" accept=".json" style="display: none;"
-                            onchange="importData(event)">
-                    </li>
+                    <?php if (isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'): ?>
+<li class="nav-item"><a class="nav-link" href="index.php?action=backup_db" data-translate-key="بیک اپ">بیک اپ</a></li>
+<li class="nav-item"><a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#restoreDbModal" data-translate-key="بحال کریں">بحال کریں</a></li>
+                    <?php endif; ?>
+                    <li class="nav-item"><a class="nav-link" href="hadith.php" data-translate-key="تمام احادیث">All Hadiths</a></li>
+                    <li class="nav-item"><a class="nav-link" href="quran.php" data-translate-key="تمام قرآنی آیات">All Quran Verses</a></li>
                     <li class="nav-item">
                         <?php if (isset($_SESSION['user_id'])): ?>
                             <a class="nav-link" href="#" onclick="logout()"
@@ -2234,6 +2297,9 @@ if (isset($_GET['api'])) {
         const translations = {
             ur: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز",
+                "ہوم": "ہوم",
+                "تمام احادیث": "تمام احادیث",
+                "تمام قرآنی آیات": "تمام قرآنی آیات",
                 "اہم تاریخیں": "اہم تاریخیں",
                 "Remaining": "باقی",
                 "سیرت کے واقعات": "سیرت کے واقعات",
@@ -2312,7 +2378,7 @@ if (isset($_GET['api'])) {
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔",
                 "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "فائل پڑھنے میں خرابی پیش آئی۔",
-                "آج کے دن سیرت میں کوئی خاص واقعہ نہیں مل سکا (No specific event found in Seerah for today).": "آج کے دن سیرت میں کوئی خاص واقعہ نہیں مل سکا",
+                "آج کے دن سیرت میں کوئی واقعہ واقعہ نہیں مل سکا (No specific event found in Seerah for today).": "آج کے دن سیرت میں کوئی واقعہ واقعہ نہیں مل سکا",
                 "براہ کرم تاریخ درج کریں۔": "براہ کرم تاریخ درج کریں۔",
                 "براہ کرم تمام ہجری تاریخ درج کریں۔": "براہ کرم تمام ہجری تاریخ درج کریں۔",
                 "اوقاتِ نماز حاصل کرنے میں خرابی:": "اوقاتِ نماز حاصل کرنے میں خرابی:",
@@ -2390,6 +2456,9 @@ if (isset($_GET['api'])) {
             },
             en: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "Prophet Muhammad (PBUH) Islamic Hub",
+                "ہوم": "Home",
+                "تمام احادیث": "All Hadiths",
+                "تمام قرآنی آیات": "All Quran Verses",
                 "اہم تاریخیں": "Important Dates",
                 "Remaining": "Remaining",
                 "سیرت کے واقعات": "Seerah Events",
@@ -2468,7 +2537,7 @@ if (isset($_GET['api'])) {
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "Imported file does not contain valid dates.",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "Error reading file. It might not be a valid JSON.",
                 "فائل پڑھنے میں خرابی پیش آئی۔ (Error reading file.)": "Error reading file.",
-                "آج کے دن سیرت میں کوئی خاص واقعہ نہیں مل سکا (No specific event found in Seerah for today).": "No specific event found in Seerah for today.",
+                "آج کے دن سیرت میں کوئی واقعہ واقعہ نہیں مل سکا (No specific event found in Seerah for today).": "No specific event found in Seerah for today.",
                 "براہ کرم تاریخ درج کریں۔": "Please enter a date.",
                 "براہ کرم تمام ہجری تاریخ درج کریں۔": "Please enter full Hijri date.",
                 "اوقاتِ نماز حاصل کرنے میں خرابی:": "Error getting prayer times:",
@@ -2583,11 +2652,6 @@ if (isset($_GET['api'])) {
             displayDuaOfTheDay();
             populateCalendar();
             loadQuizQuestion(false);
-            // This is handled by PHP. No need to call insertSampleData here.
-            // if (<?php echo json_encode(isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'); ?>) {
-            //     loadAdminCrudTable(); // This call might still happen if already logged in.
-            // }
-            // Always try to load admin table if the page is admin_dashboard
             const urlParams = new URLSearchParams(window.location.search);
             const page = urlParams.get('page');
             if (page === 'admin_dashboard' && <?php echo json_encode(isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'); ?>) {
@@ -2651,18 +2715,14 @@ if (isset($_GET['api'])) {
             const totalMinutes = Math.floor(totalSeconds / 60);
             const totalHours = Math.floor(totalMinutes / 60);
             const totalDays = Math.floor(totalHours / 24);
-
             const hours = totalHours % 24;
             const minutes = totalMinutes % 60;
             const seconds = totalSeconds % 60;
-
             const sign = isCountdown ? (translations[currentLanguage]["Remaining"] || "Remaining:") + " " : "";
-
             if (isCountdown) {
                 const remainingDaysInYear = totalDays % 365.25;
                 const months = Math.floor(remainingDaysInYear / 30.44);
                 const days = Math.floor(remainingDaysInYear % 30.44);
-
                 return `${sign}${months} ${translations[currentLanguage]["ماہ (Months)"]}
                 ${days} ${translations[currentLanguage]["دن (Days)"]}
                 ${hours} ${translations[currentLanguage]["گھنٹے (Hours)"]}
@@ -2673,7 +2733,6 @@ if (isset($_GET['api'])) {
                 const remainingDaysAfterYears = totalDays % 365.25;
                 const months = Math.floor(remainingDaysAfterYears / 30.44);
                 const days = Math.floor(remainingDaysAfterYears % 30.44);
-
                 return `${sign}${years} ${translations[currentLanguage]["سال (Years)"]}
                 ${months} ${translations[currentLanguage]["ماہ (Months)"]}
                 ${days} ${translations[currentLanguage]["دن (Days)"]}
@@ -2690,8 +2749,6 @@ if (isset($_GET['api'])) {
             return `${translations[currentLanguage]["کل دن"]}: ${totalDays} ${translations[currentLanguage]["دن (Days)"]}
                     ${translations[currentLanguage]["کل ماہ"]}: ${totalMonths} ${translations[currentLanguage]["ماہ (Months)"]}`;
         }
-
-
 
         function updateUpcomingAnniversaries() {
             const today = new Date();
@@ -2730,9 +2787,8 @@ if (isset($_GET['api'])) {
                 }
             });
             if (!found) {
-                seerahEventTodayElement.textContent = translations[currentLanguage]["آج کے دن سیرت میں کوئی خاص واقعہ نہیں مل سکا (No specific event found in Seerah for today)."];
+                seerahEventTodayElement.textContent = translations[currentLanguage]["آج کے دن سیرت میں کوئی واقعہ واقعہ نہیں مل سکا (No specific event found in Seerah for today)."];
             }
-            // Ensure the nextSibling is valid before attempting to querySelector
             if (seerahEventTodayElement.nextElementSibling) {
                 updateFavoriteButton('seerah_event', eventToday ? eventToday.id : null, seerahEventTodayElement.nextElementSibling.querySelector('.favorite-btn'));
             }
@@ -2754,16 +2810,11 @@ if (isset($_GET['api'])) {
         }
 
         function displayQuranVerseOfTheDay() {
-            // Declare the variable once at the top.
             const quranVerseDisplay = document.getElementById("quranVerseDisplay");
-
-            // Check if the element exists. If not, stop the function.
             if (!quranVerseDisplay) {
                 return;
             }
-
             if (allQuranVerses.length === 0) {
-                // Gracefully handle no data without destroying elements
                 quranVerseDisplay.querySelector('.verse-arabic').textContent = '';
                 quranVerseDisplay.querySelector('.verse-translation').textContent = 'No Quran verse available.';
                 quranVerseDisplay.querySelector('.verse-transliteration').textContent = '';
@@ -2771,13 +2822,10 @@ if (isset($_GET['api'])) {
                 quranVerseDisplay.querySelector('.audio-player').style.display = 'none';
                 return;
             }
-
             const today = new Date();
             const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
             const verseIndex = dayOfYear % allQuranVerses.length;
             const verse = allQuranVerses[verseIndex];
-
-            // Use the variable that was already declared and checked.
             quranVerseDisplay.querySelector('.verse-arabic').textContent = verse.arabic_text;
             quranVerseDisplay.querySelector('.verse-transliteration').textContent = verse.transliteration;
             quranVerseDisplay.querySelector('.verse-translation').textContent = currentLanguage === 'ur' ? verse.translation_ur : verse.translation_en;
@@ -2789,29 +2837,21 @@ if (isset($_GET['api'])) {
         }
 
         function displayDuaOfTheDay() {
-            // Declare the variable once at the top.
             const duaDisplay = document.getElementById("duaDisplay");
-
-            // Check if the element exists. If not, stop the function.
             if (!duaDisplay) {
                 return;
             }
-
             if (allDailyDuas.length === 0) {
-                // Gracefully handle no data without destroying elements
                 duaDisplay.querySelector('.dua-arabic').textContent = '';
                 duaDisplay.querySelector('.dua-translation').textContent = 'No Dua available.';
                 duaDisplay.querySelector('.dua-transliteration').textContent = '';
                 duaDisplay.querySelector('.dua-source').textContent = '';
                 return;
             }
-
             const today = new Date();
             const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);
             const duaIndex = dayOfYear % allDailyDuas.length;
             const dua = allDailyDuas[duaIndex];
-
-            // Use the variable that was already declared and checked.
             duaDisplay.querySelector('.dua-arabic').textContent = dua.arabic_text;
             duaDisplay.querySelector('.dua-transliteration').textContent = dua.transliteration;
             duaDisplay.querySelector('.dua-translation').textContent = currentLanguage === 'ur' ? dua.translation_ur : dua.translation_en;
@@ -2833,12 +2873,9 @@ if (isset($_GET['api'])) {
 
         function populateAsmaUlHusna() {
             const asmaList = document.querySelector('.asma-list');
-
-            // FIX: Add this check.
             if (!asmaList) {
-                return; // Stop the function if the element doesn't exist.
+                return;
             }
-
             asmaList.innerHTML = '';
             allAsmaUlHusna.forEach(name => {
                 const div = document.createElement('div');
@@ -2865,12 +2902,9 @@ if (isset($_GET['api'])) {
 
         function populateProphetNames() {
             const prophetNamesList = document.querySelector('.prophet-names-list');
-
-            // FIX: Add this check.
             if (!prophetNamesList) {
-                return; // Stop the function if the element doesn't exist.
+                return;
             }
-
             prophetNamesList.innerHTML = '';
             allProphetNames.forEach(name => {
                 const div = document.createElement('div');
@@ -2898,7 +2932,7 @@ if (isset($_GET['api'])) {
         function populateTimeline() {
             const timelineDiv = document.getElementById('prophetTimeline');
             if (!timelineDiv) {
-                return; // EXIT if the timeline element doesn't exist on the page
+                return;
             }
             timelineDiv.innerHTML = '';
             allSeerahEvents.sort((a, b) => new Date(a.gregorian_date_iso) - new Date(b.gregorian_date_iso));
@@ -3010,19 +3044,16 @@ if (isset($_GET['api'])) {
         let qiblaLayer = null;
 
         function getPrayerTimes() {
-            // FIX: Add this block to check for the required elements first.
             const prayerLocationInput = document.getElementById('prayerLocation');
             const calculationMethodSelect = document.getElementById('calculationMethod');
             if (!prayerLocationInput || !calculationMethodSelect) {
-                // If elements don't exist (e.g., on admin page), do nothing.
                 return;
             }
-
             if (!navigator.geolocation) {
                 alert(translations[currentLanguage]["آپ کا براؤزر جغرافیائی محل وقوع کی حمایت نہیں کرتا ہے۔ (Your browser does not support geolocation.)"]);
                 return;
             }
-            const cityInput = prayerLocationInput.value; // Use the variable from the check
+            const cityInput = prayerLocationInput.value;
             if (cityInput) {
                 console.warn(translations[currentLanguage]["شہر کے نام سے اوقات نماز حاصل کرنے کے لیے ایک جغرافیائی لوکیشن سروس کی ضرورت ہے۔ فی الحال آپ کے موجودہ مقام کا استعمال کیا جائے گا۔ (Getting prayer times by city name requires a geocoding service. Your current location will be used for now.)"]);
             }
@@ -3034,9 +3065,9 @@ if (isset($_GET['api'])) {
                         };
                         localStorage.setItem('userLatitude', userLocation.latitude);
                         localStorage.setItem('userLongitude', userLocation.longitude);
-                        localStorage.setItem('prayerCalculationMethod', calculationMethodSelect.value); // Use the variable
+                        localStorage.setItem('prayerCalculationMethod', calculationMethodSelect.value);
                         const date = new Date();
-                        const params = adhan.CalculationMethod[calculationMethodSelect.value](); // Use the variable
+                        const params = adhan.CalculationMethod[calculationMethodSelect.value]();
                         const coordinates = new adhan.Coordinates(userLocation.latitude, userLocation.longitude);
                         const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
                         const times = {
@@ -3093,7 +3124,7 @@ if (isset($_GET['api'])) {
         function initializeQiblaMap() {
             const mapContainer = document.getElementById('qiblaMap');
             if (!mapContainer) {
-                return; // EXIT if the map container doesn't exist
+                return;
             }
             if (map) {
                 map.remove();
@@ -3109,11 +3140,9 @@ if (isset($_GET['api'])) {
         function updateQiblaDirection(location) {
             const qiblaArrow = document.getElementById('qiblaArrow');
             const qiblaInfo = document.getElementById('qiblaInfo');
-
             if (!qiblaArrow || !qiblaInfo) {
-                return; // Exit if elements are not on the page
+                return;
             }
-
             if (!location || typeof adhan === 'undefined') {
                 qiblaInfo.textContent = translations[currentLanguage]["مقام دستیاب نہیں ہے۔"];
                 return;
@@ -3257,19 +3286,16 @@ if (isset($_GET['api'])) {
         }
 
         function getPrayerTimes() {
-            // FIX: Add this block to check for the required elements first.
             const prayerLocationInput = document.getElementById('prayerLocation');
             const calculationMethodSelect = document.getElementById('calculationMethod');
             if (!prayerLocationInput || !calculationMethodSelect) {
-                // If elements don't exist (e.g., on admin page), do nothing.
                 return;
             }
-
             if (!navigator.geolocation) {
                 alert(translations[currentLanguage]["آپ کا براؤزر جغرافیائی محل وقوع کی حمایت نہیں کرتا ہے۔ (Your browser does not support geolocation.)"]);
                 return;
             }
-            const cityInput = prayerLocationInput.value; // Use the variable from the check
+            const cityInput = prayerLocationInput.value;
             if (cityInput) {
                 console.warn(translations[currentLanguage]["شہر کے نام سے اوقات نماز حاصل کرنے کے لیے ایک جغرافیائی لوکیشن سروس کی ضرورت ہے۔ فی الحال آپ کے موجودہ مقام کا استعمال کیا جائے گا۔ (Getting prayer times by city name requires a geocoding service. Your current location will be used for now.)"]);
             }
@@ -3281,9 +3307,9 @@ if (isset($_GET['api'])) {
                         };
                         localStorage.setItem('userLatitude', userLocation.latitude);
                         localStorage.setItem('userLongitude', userLocation.longitude);
-                        localStorage.setItem('prayerCalculationMethod', calculationMethodSelect.value); // Use the variable
+                        localStorage.setItem('prayerCalculationMethod', calculationMethodSelect.value);
                         const date = new Date();
-                        const params = adhan.CalculationMethod[calculationMethodSelect.value](); // Use the variable
+                        const params = adhan.CalculationMethod[calculationMethodSelect.value]();
                         const coordinates = new adhan.Coordinates(userLocation.latitude, userLocation.longitude);
                         const prayerTimes = new adhan.PrayerTimes(coordinates, date, params);
                         const times = {
@@ -3339,12 +3365,9 @@ if (isset($_GET['api'])) {
 
         function populateCalendar() {
             const calendarGrid = document.getElementById('calendarGrid');
-
-            // FIX: Add this check.
             if (!calendarGrid) {
-                return; // Stop the function if the calendar grid doesn't exist.
+                return;
             }
-
             calendarGrid.innerHTML = '';
             const dayHeaders = currentLanguage === 'ur' ? gregorianDaysOfWeek : gregorianDaysOfWeekEn;
             dayHeaders.forEach(day => {
@@ -3357,14 +3380,11 @@ if (isset($_GET['api'])) {
             const todayHijri = getHijriDate(todayGregorian);
             let displayHijriMonth = currentHijriCalendarMonth || todayHijri.month;
             let displayHijriYear = currentHijriCalendarYear || todayHijri.year;
-
-            // Add another check here for the month/year display element
             const currentHijriMonthYearElement = document.getElementById('currentHijriMonthYear');
             if (currentHijriMonthYearElement) {
                 currentHijriMonthYearElement.textContent =
                     `${currentLanguage === 'ur' ? hijriMonths[displayHijriMonth - 1] : translations[currentLanguage][hijriMonthsEn[displayHijriMonth - 1]]} ${displayHijriYear} ہجری`;
             }
-
             let firstDayOfMonthGregorian = hijriToGregorian(displayHijriYear, displayHijriMonth, 1);
             let firstDayOfWeek = firstDayOfMonthGregorian.getDay();
             let daysInMonth = (displayHijriMonth % 2 !== 0 || displayHijriMonth === 12) ? 30 : 29;
@@ -3418,12 +3438,10 @@ if (isset($_GET['api'])) {
         }
 
         function loadQuizQuestion() {
-            // FIX: Add a check for the main quiz element first.
             const quizQuestionElement = document.getElementById('quizQuestion');
             if (!quizQuestionElement) {
-                return; // Stop the function if the quiz elements don't exist.
+                return;
             }
-
             if (allQuizQuestions.length === 0) {
                 quizQuestionElement.textContent = "No quiz questions available.";
                 document.getElementById('quizOptions').innerHTML = "";
@@ -3476,28 +3494,20 @@ if (isset($_GET['api'])) {
             } else {
                 resetToDefaults();
             }
-
             setTheme(currentTheme);
             changeFontSize(0);
-
-            // --- Start of Fixes ---
             const languageSelect = document.getElementById('languageSelect');
             if (languageSelect) {
                 languageSelect.value = currentLanguage;
             }
-
             const tasbihCountElement = document.getElementById('tasbihCount');
             if (tasbihCountElement) {
                 tasbihCountElement.textContent = tasbihCount;
             }
-            // --- End of Fixes ---
-
             const savedLat = localStorage.getItem('userLatitude');
             const savedLon = localStorage.getItem('userLongitude');
             const savedCalcMethod = localStorage.getItem('prayerCalculationMethod');
-
             if (savedLat && savedLon && savedCalcMethod) {
-                // --- Another Fix ---
                 const calculationMethodElement = document.getElementById('calculationMethod');
                 if (calculationMethodElement) {
                     calculationMethodElement.value = savedCalcMethod;
@@ -3557,8 +3567,6 @@ if (isset($_GET['api'])) {
             return gregorianToHijri(date);
         }
 
-
-
         function changeMonth(delta) {
             let currentMonth = currentHijriCalendarMonth;
             let currentYear = currentHijriCalendarYear;
@@ -3579,8 +3587,6 @@ if (isset($_GET['api'])) {
             currentHijriCalendarYear = currentYear;
             populateCalendar();
         }
-
-
 
         function checkAnswer(selectedIndex) {
             const optionsButtons = document.querySelectorAll('#quizOptions button');
@@ -3604,8 +3610,6 @@ if (isset($_GET['api'])) {
         }
 
         function isLoggedInUser() {
-            // Check PHP session role directly.
-            // This assumes the PHP variable is correctly set during login and accessible.
             return <?php echo json_encode(isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'); ?>;
         }
 
@@ -3643,8 +3647,8 @@ if (isset($_GET['api'])) {
             });
             const result = await response.json();
             if (result.success) {
-                await fetchUserData(); // Re-fetch user data to update favorites list
-                updateFavoriteButton(itemType, itemId, buttonElement); // Update button state
+                await fetchUserData();
+                updateFavoriteButton(itemType, itemId, buttonElement);
             } else {
                 alert(`Error: ${result.message}`);
             }
@@ -3653,8 +3657,6 @@ if (isset($_GET['api'])) {
             try {
                 const response = await fetch('?api=get_daily_content');
                 const data = await response.json();
-
-                // Directly assign full arrays from API for current data
                 allHadiths = data.all_hadiths || (data.hadith_of_the_day ? [data.hadith_of_the_day] : []);
                 allQuranVerses = data.all_quran_verses || (data.quran_verse_of_the_day ? [data.quran_verse_of_the_day] : []);
                 allDailyDuas = data.all_daily_duas || (data.dua_of_the_day ? [data.dua_of_the_day] : []);
@@ -3665,14 +3667,11 @@ if (isset($_GET['api'])) {
                 }));
                 allAsmaUlHusna = data.asma_ul_husna;
                 allProphetNames = data.prophet_names;
-
                 const calendarResponse = await fetch('?api=get_calendar_events');
                 allCalendarEvents = await calendarResponse.json();
-
                 if (isLoggedInUser()) {
                     await fetchUserData();
                 }
-
                 displayHadithOfTheDay();
                 displayQuranVerseOfTheDay();
                 displayDuaOfTheDay();
@@ -4265,7 +4264,6 @@ if (isset($_GET['api'])) {
                 displayOrder: ['id', 'surah_number', 'verse_number', 'reciter_name', 'audio_url']
             }
         };
-
         async function fetchAdminData(table) {
             const response = await fetch(`?api=crud&action=read&table=${table}`);
             if (!response.ok) {
@@ -4292,7 +4290,6 @@ if (isset($_GET['api'])) {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success && data.data.length > 0) {
-                        // Build table header
                         const headers = Object.keys(data.data[0]);
                         let headerHtml = '<tr>';
                         headers.forEach(header => {
@@ -4300,21 +4297,16 @@ if (isset($_GET['api'])) {
                         });
                         headerHtml += '<th data-translate-key="عمل">Actions</th></tr>';
                         document.getElementById('adminCrudTableHeader').innerHTML = headerHtml;
-
-                        // Build table body
                         let bodyHtml = '';
                         data.data.forEach(row => {
                             bodyHtml += '<tr>';
                             headers.forEach(header => {
-                                // Handle JSON fields (like options in quiz questions)
                                 let cellValue = row[header];
                                 if (typeof cellValue === 'object' && cellValue !== null) {
                                     cellValue = JSON.stringify(cellValue);
                                 }
                                 bodyHtml += `<td>${cellValue}</td>`;
                             });
-
-                            // Add action buttons
                             bodyHtml += `
                 <td class="admin-crud-actions">
                     <button class="btn btn-sm btn-warning" onclick="openAdminCrudModal('update', ${row.id})" 
@@ -4322,11 +4314,10 @@ if (isset($_GET['api'])) {
                     <button class="btn btn-sm btn-danger" onclick="deleteAdminCrudRecord('${tableName}', ${row.id})" 
                         data-translate-key="حذف کریں">Delete</button>
                 </td>`;
-
                             bodyHtml += '</tr>';
                         });
                         document.getElementById('adminCrudTableBody').innerHTML = bodyHtml;
-                        translatePage(); // Update translations for new elements
+                        translatePage();
                     } else {
                         document.getElementById('adminCrudTableHeader').innerHTML = '';
                         document.getElementById('adminCrudTableBody').innerHTML =
@@ -4375,8 +4366,6 @@ if (isset($_GET['api'])) {
             const modal = new bootstrap.Modal(document.getElementById('adminCrudModal'));
             const modalTitle = document.getElementById('adminCrudModalLabel');
             const submitBtn = document.getElementById('crudSubmitBtn');
-
-            // Set modal title and button text based on action
             if (action === 'create') {
                 modalTitle.textContent = translations[currentLanguage]["نیا ریکارڈ شامل کریں"];
                 submitBtn.textContent = translations[currentLanguage]["شامل کریں"];
@@ -4384,11 +4373,7 @@ if (isset($_GET['api'])) {
                 modalTitle.textContent = translations[currentLanguage]["ریکورد کو اپ ڈیٹ کریں"];
                 submitBtn.textContent = translations[currentLanguage]["ریکورد کو اپ ڈیٹ کریں"];
             }
-
-            // Clear previous form fields
             document.getElementById('crudFormFields').innerHTML = '';
-
-            // If updating, fetch the record data first
             if (action === 'update' && id) {
                 fetch('?api=crud', {
                         method: 'POST',
@@ -4419,7 +4404,6 @@ if (isset($_GET['api'])) {
                         alert('Error fetching record data');
                     });
             } else {
-                // For create action, build empty form
                 buildCrudForm(tableName);
                 document.getElementById('crudItemId').value = '';
                 document.getElementById('crudTableName').value = tableName;
@@ -4429,50 +4413,39 @@ if (isset($_GET['api'])) {
 
         function buildCrudForm(tableName, record = null) {
             const formFieldsDiv = document.getElementById('crudFormFields');
-            formFieldsDiv.innerHTML = ''; // Clear previous form
+            formFieldsDiv.innerHTML = '';
             const config = adminCrudTableConfig[tableName];
             const action = record ? 'update' : 'create';
-
             if (!config) return;
-
             const itemData = record || {};
-
             for (const key in config.fields) {
                 const field = config.fields[key];
-
-                // Skip readonly 'id' field on create, but show it on update
                 if (action === 'create' && key === 'id') {
                     continue;
                 }
-
                 const labelText = field[`label_${currentLanguage}`] || field.label_en || key;
                 let inputHtml = '';
                 const elementId = `crud_form_${key}`;
                 const commonAttrs = `class="form-control bg-secondary text-white border-0" id="${elementId}" name="${key}" ${field.required ? 'required' : ''} ${field.readonly ? 'readonly' : ''}`;
-
                 if (field.type === 'textarea') {
                     inputHtml = `<textarea ${commonAttrs}>${itemData[key] || ''}</textarea>`;
                 } else if (field.type === 'json_array') {
                     const value = Array.isArray(itemData[key]) ? itemData[key].join(', ') : (itemData[key] || '');
                     inputHtml = `<input type="text" ${commonAttrs} value="${value}">`;
                 } else if (field.type === 'password_reset') {
-                    // Only show for update action, for create we need a regular password field
                     if (action === 'update') {
                         inputHtml = `<input type="password" class="form-control bg-secondary text-white border-0" name="password" placeholder="${translations[currentLanguage]["پاس ورڈ دوبارہ سیٹ کریں"] || 'Enter new password (optional)'}">`;
                     } else {
-                        continue; // Skip password_hash field representation in create form
+                        continue;
                     }
                 } else {
                     inputHtml = `<input type="${field.type || 'text'}" ${commonAttrs} value="${itemData[key] || ''}" ${field.min ? `min="${field.min}"` : ''}>`;
                 }
-
                 const formGroup = document.createElement('div');
                 formGroup.className = 'admin-crud-form-group';
                 formGroup.innerHTML = `<label for="${elementId}">${labelText}:</label>${inputHtml}`;
                 formFieldsDiv.appendChild(formGroup);
             }
-
-            // Add a dedicated password field for creating new users/admins
             if (action === 'create' && (tableName === 'users' || tableName === 'admins')) {
                 const passGroup = document.createElement('div');
                 passGroup.className = 'admin-crud-form-group';
@@ -4493,7 +4466,6 @@ if (isset($_GET['api'])) {
                     const value = Array.isArray(itemData[key]) ? itemData[key].join(', ') : (itemData[key] || '');
                     inputHtml = `<input type="text" ${commonAttrs} value="${value}">`;
                 } else if (field.type === 'password_reset') {
-                    // Password reset inputs. Do not show current hash.
                     inputHtml = `
                         <input type="password" ${commonAttrs.replace('required', '')} placeholder="${translations[currentLanguage]["نئے پاس ورڈ کی تصدیق کریں"]}" id="${key}_new">
                         <input type="password" class="form-control bg-secondary text-white border-0 mt-2" placeholder="${translations[currentLanguage]["نئے پاس ورڈ کی تصدیق کریں"]}" id="${key}_confirm">
@@ -4509,23 +4481,18 @@ if (isset($_GET['api'])) {
         }
         document.getElementById('adminCrudForm').addEventListener('submit', function(e) {
             e.preventDefault();
-
             const tableName = document.getElementById('crudTableName').value;
             const id = document.getElementById('crudItemId').value;
             const action = id ? 'update' : 'create';
-
-            // Collect form data
             const formData = {};
             const inputs = document.querySelectorAll('#adminCrudForm input, #adminCrudForm textarea, #adminCrudForm select');
             inputs.forEach(input => {
                 if (input.name && input.name !== 'crudTableName' && input.name !== 'crudItemId') {
-                    // Handle different input types
                     if (input.type === 'checkbox') {
                         formData[input.name] = input.checked;
                     } else if (input.type === 'number') {
                         formData[input.name] = parseFloat(input.value) || 0;
                     } else if (input.type === 'text' && input.name.endsWith('_json')) {
-                        // Handle JSON fields
                         try {
                             formData[input.name.replace('_json', '')] = JSON.parse(input.value);
                         } catch (e) {
@@ -4537,19 +4504,14 @@ if (isset($_GET['api'])) {
                     }
                 }
             });
-
-            // Prepare the request data
             const requestData = {
                 action: action,
                 table: tableName,
                 fields: formData
             };
-
             if (action === 'update') {
                 requestData.id = id;
             }
-
-            // Send the request
             fetch('?api=crud', {
                     method: 'POST',
                     headers: {
@@ -4572,7 +4534,6 @@ if (isset($_GET['api'])) {
                     alert('Error performing operation');
                 });
         });
-
         async function deleteAdminCrudItem(table, id) {
             if (!confirm(translations[currentLanguage]["کیا آپ واقعی اس ریکارڈ کو حذف کرنا چاہتے ہیں؟"])) {
                 return;
@@ -4616,7 +4577,6 @@ if (isset($_GET['api'])) {
                     let itemText = '';
                     switch (fav.item_type) {
                         case 'hadith':
-                            // Find corresponding data from the main arrays (allHadiths, etc.)
                             const hadith = allHadiths.find(h => h.id === parseInt(fav.item_id));
                             itemText = hadith ? (currentLanguage === 'ur' ? hadith.hadith_ur.substring(0, 50) + '...' : hadith.hadith_en.substring(0, 50) + '...') : 'Hadith Not Found';
                             break;
@@ -4771,11 +4731,7 @@ if (isset($_GET['api'])) {
             }
         }
         document.addEventListener('DOMContentLoaded', async () => {
-            // No need to call initializeSampleData here. It's handled by PHP on initial table creation.
-
-            loadData(); // Load user preferences (theme, language, dates)
-
-            // Event listeners for date settings
+            loadData();
             document.getElementById('dateSettingsForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 const birthDateInput = document.getElementById('birthDateInput').value;
@@ -4791,13 +4747,8 @@ if (isset($_GET['api'])) {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('settingsModal'));
                 modal.hide();
             });
-
-            await fetchInitialData(); // Fetch main app data (hadiths, quran, etc.)
-
-            setInterval(updateCountdown, 1000); // Start countdown and daily content updates
-
-            // Initialize prayer times and Qibla direction based on stored location or current location
-            // FIX: Wrap this logic in a check for the prayer times section
+            await fetchInitialData();
+            setInterval(updateCountdown, 1000);
             const prayerTimesSection = document.getElementById('prayerTimesSection');
             if (prayerTimesSection) {
                 const savedLat = localStorage.getItem('userLatitude');
@@ -4811,7 +4762,7 @@ if (isset($_GET['api'])) {
                     };
                     getPrayerTimes();
                 } else {
-                    getPrayerTimes(); // Attempt to get current location if none is saved
+                    getPrayerTimes();
                 }
             }
             initializeQiblaMap();
@@ -4833,13 +4784,10 @@ if (isset($_GET['api'])) {
                     );
                 }
             }
-
-            // Handle admin/user dashboard loading based on URL and session
             const urlParams = new URLSearchParams(window.location.search);
             const page = urlParams.get('page');
             if (page === 'admin_dashboard' && <?php echo json_encode(isset($_SESSION['user_id']) && $_SESSION['role'] === 'admin'); ?>) {
                 loadAdminCrudTable();
-                // Add listener for table selection only if admin dashboard is active
                 document.getElementById('adminCrudTableSelect').addEventListener('change', loadAdminCrudTable);
             } else if (page === 'user_dashboard' && <?php echo json_encode(isset($_SESSION['user_id']) && $_SESSION['role'] === 'user'); ?>) {
                 renderUserDashboard();
