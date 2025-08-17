@@ -1,19 +1,24 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<meta content="Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub" name="title"/>
-<meta content="A comprehensive Islamic application dedicated to Prophet Muhammad (PBUH), featuring Hijri calendar, event timelines, Hadith, Asma-ul-Husna, prayer times, Qibla direction, and more." name="description"/>
-<meta content="Prophet Muhammad, Islam, Hijri Calendar, Mawlid, Hadith, Asma-ul-Husna, Prayer Times, Qibla, Islamic Events, Seerah, Migration, Badr, Mecca, Quran, Allah, Urdu, Arabic, PBUH, Pakistan, Yasin Ullah" name="keywords"/>
-<meta content="Yasin Ullah, Pakistan" name="author"/>
-<title>Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet"/>
-<link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
-<style>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub" name="title" />
+    <meta
+        content="A comprehensive Islamic application dedicated to Prophet Muhammad (PBUH), featuring Hijri calendar, event timelines, Hadith, Asma-ul-Husna, prayer times, Qibla direction, and more."
+        name="description" />
+    <meta
+        content="Prophet Muhammad, Islam, Hijri Calendar, Mawlid, Hadith, Asma-ul-Husna, Prayer Times, Qibla, Islamic Events, Seerah, Migration, Badr, Mecca, Quran, Allah, Urdu, Arabic, PBUH, Pakistan, Yasin Ullah"
+        name="keywords" />
+    <meta content="Yasin Ullah, Pakistan" name="author" />
+    <title>Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet" />
+    <link href="https://unpkg.com/leaflet/dist/leaflet.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet" />
+    <style>
         body {
             font-family: Calibri, Arial, sans-serif;
             text-align: center;
@@ -78,7 +83,7 @@
             border: 2px solid #3498db;
             margin: 15px;
             max-width: 90%;
-            width: 550px;
+            width: 98%;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
             transition: background-color 0.5s ease, border-color 0.5s ease;
         }
@@ -103,7 +108,7 @@
         }
 
         .total-info {
-            font-size: 1.2rem;
+            font-size: 1.2rem !important;
             margin-top: 10px;
             color: #cfd8dc;
         }
@@ -137,7 +142,6 @@
         }
 
         .timeline-container {
-            width: 90%;
             overflow-x: auto;
             white-space: nowrap;
             padding: 20px 0;
@@ -147,7 +151,6 @@
         .timeline {
             display: inline-block;
             position: relative;
-            padding-top: 50px;
         }
 
         .timeline::before {
@@ -300,7 +303,7 @@
             .asma-name,
             .prophet-name,
             .qibla-display {
-                font-size: 1.2rem;
+                font-size: 1.4rem !important;
             }
 
             .total-info {
@@ -350,263 +353,291 @@
             }
         }
     </style>
-<link href="manifest.json" rel="manifest"/>
-<link href="favicon.ico" rel="icon" type="image/x-icon"/>
-</link></head>
+    <link href="manifest.json" rel="manifest" />
+    <link href="favicon.ico" rel="icon" type="image/x-icon" />
+    </link>
+</head>
+
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark">
-<div class="container-fluid">
-<a class="navbar-brand" href="#">صلی اللہ علیہ و سلم</a>
-<button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
-<span class="navbar-toggler-icon"></span>
-</button>
-<div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-<ul class="navbar-nav">
-<li class="nav-item"><a aria-current="page" class="nav-link active" href="#birthCountdown">اہم
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">صلی اللہ علیہ و سلم</a>
+            <button aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"
+                class="navbar-toggler" data-bs-target="#navbarNav" data-bs-toggle="collapse" type="button">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a aria-current="page" class="nav-link active" href="#birthCountdown">اہم
                             تاریخیں</a></li>
-<li class="nav-item"><a class="nav-link" href="#seerahEvents">سیرت کے واقعات</a></li>
-<li class="nav-item"><a class="nav-link" href="#hadithOfTheDay">حدیثِ مبارکہ</a></li>
-<li class="nav-item"><a class="nav-link" href="#asmaUlHusna">اسمائے حسنیٰ</a></li>
-<li class="nav-item"><a class="nav-link" href="#prophetNames">نبی اکرم کے القاب</a></li>
-<li class="nav-item"><a class="nav-link" href="#prayerTimesSection">اوقاتِ نماز</a></li>
-<li class="nav-item"><a class="nav-link" data-bs-target="#dateConverterModal" data-bs-toggle="modal" href="#">تاریخ کنورٹر</a></li>
-<li class="nav-item"><a class="nav-link" data-bs-target="#settingsModal" data-bs-toggle="modal" href="#">ترتیبات</a></li>
-<li class="nav-item"><a class="nav-link" href="#" onclick="exportData()">بیک اپ</a></li>
-<li class="nav-item">
-<a class="nav-link" href="#" onclick="document.getElementById('importFile').click()">بحال
+                    <li class="nav-item"><a class="nav-link" href="#seerahEvents">سیرت کے واقعات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#hadithOfTheDay">حدیثِ مبارکہ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#asmaUlHusna">اسمائے حسنیٰ</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prophetNames">نبی اکرم کے القاب</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#prayerTimesSection">اوقاتِ نماز</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-target="#dateConverterModal" data-bs-toggle="modal"
+                            href="#">تاریخ کنورٹر</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-target="#settingsModal" data-bs-toggle="modal"
+                            href="#">ترتیبات</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="exportData()">بیک اپ</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="document.getElementById('importFile').click()">بحال
                             کریں</a>
-<input accept=".json" id="importFile" onchange="importData(event)" style="display: none;" type="file"/>
-</li>
-</ul>
-</div>
-</div>
-</nav>
-<div class="main-content">
-<h1 class="animate__animated animate__fadeInDown">سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز</h1>
-<div class="container-card animate__animated animate__fadeInUp" id="birthCountdown">
-<h2>ولادت کا وقت (Birth Countdown):</h2>
-<div class="countdown-display" id="countdownBirth"></div>
-<div class="total-info" id="totalDaysMonthsBirth"></div>
-<h2>اگلی ولادت کی سالگرہ (Next Mawlid):</h2>
-<div class="countdown-display" id="nextMawlidCountdown"></div>
-<div class="mt-3">
-<button class="btn btn-info share-buttons" onclick="shareContent('nextMawlidCountdown', 'اگلی ولادت کی سالگرہ')"><i class="fas fa-share-alt"></i></button>
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="deathCountdown">
-<h2>وفات کا وقت (Death Countdown):</h2>
-<div class="countdown-display" id="countdownDeath"></div>
-<div class="total-info" id="totalDaysMonthsDeath"></div>
-<h2>وفات کی اگلی سالگرہ (Next Death Anniversary):</h2>
-<div class="countdown-display" id="nextDeathCountdown"></div>
-<div class="mt-3">
-<button class="btn btn-info share-buttons" onclick="shareContent('nextDeathCountdown', 'وفات کی اگلی سالگرہ')"><i class="fas fa-share-alt"></i></button>
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="todayInSeerah">
-<h2>آج سیرت میں (On This Day in Seerah):</h2>
-<div class="event-info" id="seerahEventToday"></div>
-<div class="mt-3">
-<button class="btn btn-info share-buttons" onclick="shareContent('seerahEventToday', 'آج سیرت میں')"><i class="fas fa-share-alt"></i></button>
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp hadith-container" id="hadithOfTheDay">
-<h2>آج کی حدیث (Hadith of the Day):</h2>
-<div class="hadith-text" id="currentHadith"></div>
-<div class="total-info text-end" id="hadithSource"></div>
-<div class="mt-3">
-<button class="btn btn-info share-buttons" onclick="shareContent('currentHadith', 'آج کی حدیث')"><i class="fas fa-share-alt"></i></button>
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="seerahEvents">
-<h2>سیرتِ نبوی کے اہم واقعات (Key Events from Seerah):</h2>
-<div class="timeline-container">
-<div class="timeline" id="prophetTimeline">
-</div>
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="asmaUlHusna">
-<h2>اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna):</h2>
-<div class="asma-list">
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="prophetNames">
-<h2>نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names &amp; Titles of the Prophet ﷺ):</h2>
-<div class="prophet-names-list">
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="prayerTimesSection">
-<h2>اوقاتِ نماز (Prayer Times):</h2>
-<div class="row mb-3">
-<div class="col-md-6">
-<label class="form-label" for="prayerLocation">اپنا شہر درج کریں (Enter your City):</label>
-<input class="form-control bg-secondary text-white border-0" id="prayerLocation" placeholder="مثلاً: لاہور, پاکستان" type="text"/>
-</div>
-<div class="col-md-6 mt-3 mt-md-0">
-<label class="form-label" for="calculationMethod">طریقہ حساب (Calculation Method):</label>
-<select class="form-select bg-secondary text-white border-0" id="calculationMethod">
-<option value="Karachi">University of Islamic Sciences, Karachi</option>
-<option value="MuslimWorldLeague">Muslim World League</option>
-<option value="NorthAmerica">ISNA (North America)</option>
-<option value="UmmAlQura">Umm al-Qura University, Makkah</option>
-<option value="Egyptian">Egyptian General Authority of Survey</option>
-<option value="Tehran">Institute of Geophysics, University of Tehran</option>
-<option value="Turkey">Diyanet (Turkey)</option>
-</select>
-</div>
-</div>
-<button class="btn btn-primary mb-3" onclick="getPrayerTimes()">اوقاتِ نماز حاصل کریں</button>
-<div class="total-info" id="prayerTimesDisplay">
-</div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="qiblaDirectionSection">
-<h2>قبلہ کی سمت (Qibla Direction):</h2>
-<div class="qibla-container">
-<div class="compass-arrow" id="qiblaArrow"></div>
-<i class="fas fa-compass fa-spin text-white" style="font-size: 80px;"></i>
-</div>
-<div id="qiblaMap"></div>
-<div class="total-info mt-3" id="qiblaInfo">براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)
+                        <input accept=".json" id="importFile" onchange="importData(event)" style="display: none;"
+                            type="file" />
+                    </li>
+                </ul>
             </div>
-</div>
-<div class="container-card animate__animated animate__fadeInUp" id="sourcesSection">
-<h2>ماخذ اور کتابیات (Sources &amp; Bibliography):</h2>
-<div class="total-info text-start">
-<ul>
-<li>سیرت ابن ہشام (Seerat Ibn Hisham)</li>
-<li>صحیح بخاری (Sahih Bukhari)</li>
-<li>صحیح مسلم (Sahih Muslim)</li>
-<li>سنن ابی داؤد (Sunan Abu Dawud)</li>
-<li>جامع الترمذی (Jami` at-Tirmidhi)</li>
-<li>سنن نسائی (Sunan an-Nasa'i)</li>
-<li>سنن ابن ماجہ (Sunan Ibn Majah)</li>
-<li>(Additional scholarly Islamic texts and historical records)</li>
-</ul>
-</div>
-</div>
-</div>
-<div aria-hidden="true" aria-labelledby="settingsModalLabel" class="modal fade" id="settingsModal" tabindex="-1">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content bg-dark text-white">
-<div class="modal-header border-bottom-0">
-<h5 class="modal-title" id="settingsModalLabel">ترتیبات (Settings)</h5>
-<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
-</div>
-<div class="modal-body">
-<form id="dateSettingsForm">
-<div class="mb-3">
-<label class="form-label" for="birthDateInput">تاریخِ ولادت (Gregorian Birth Date):</label>
-<input class="form-control bg-secondary text-white border-0" id="birthDateInput" type="date"/>
-</div>
-<div class="mb-3">
-<label class="form-label" for="deathDateInput">تاریخِ وفات (Gregorian Death Date):</label>
-<input class="form-control bg-secondary text-white border-0" id="deathDateInput" type="date"/>
-</div>
-<div class="mb-3">
-<label class="form-label d-block" id="theme-label">تھیم (Theme):</label>
-<div class="form-check form-check-inline">
-<input checked="" class="form-check-input" id="lightMode" name="themeMode" type="radio" value="light"/>
-<label class="form-check-label" for="lightMode">روشنی (Light)</label>
-</div>
-<div class="form-check form-check-inline">
-<input class="form-check-input" id="darkMode" name="themeMode" type="radio" value="dark"/>
-<label class="form-check-label" for="darkMode">تاریک (Dark)</label>
-</div>
-</div>
-<div class="mb-3">
-<label class="form-label d-block" id="font-size-label">فونٹ سائز (Font Size):</label>
-<div class="font-size-controls">
-<button class="btn btn-sm btn-outline-light" onclick="changeFontSize(-2)" type="button">A-</button>
-<button class="btn btn-sm btn-outline-light" onclick="changeFontSize(2)" type="button">A+</button>
-</div>
-</div>
-<div class="mb-3">
-<label class="form-label" for="languageSelect">زبان (Language):</label>
-<select class="form-select bg-secondary text-white border-0" id="languageSelect">
-<option value="ur">اردو (Urdu)</option>
-<option value="en">English</option>
-<option value="ar">العربية (Arabic)</option>
-<option value="id">Bahasa Indonesia</option>
-</select>
-</div>
-<button class="btn btn-primary w-100" type="submit">محفوظ کریں (Save Changes)</button>
-</form>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" aria-labelledby="eventDetailModalLabel" class="modal fade" id="eventDetailModal" tabindex="-1">
-<div class="modal-dialog modal-dialog-centered modal-lg">
-<div class="modal-content bg-dark text-white">
-<div class="modal-header border-bottom-0">
-<h5 class="modal-title" id="eventDetailModalLabel">واقعہ کی تفصیل (Event Details)</h5>
-<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
-</div>
-<div class="modal-body text-start">
-<h3 class="text-primary mb-3" id="modalEventTitle"></h3>
-<p id="modalEventGregorianDate"></p>
-<p id="modalEventHijriDate"></p>
-<p id="modalEventDescription"></p>
-<h6 class="mt-4"><span id="modal-source-label">حوالہ (Source): </span><span class="text-info" id="modalEventSource"></span></h6>
-</div>
-<div class="modal-footer border-top-0">
-<button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں (Close)</button>
-</div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" aria-labelledby="dateConverterModalLabel" class="modal fade" id="dateConverterModal" tabindex="-1">
-<div class="modal-dialog modal-dialog-centered">
-<div class="modal-content bg-dark text-white">
-<div class="modal-header border-bottom-0">
-<h5 class="modal-title" id="dateConverterModalLabel">تاریخ کنورٹر (Date Converter)</h5>
-<button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal" type="button"></button>
-</div>
-<div class="modal-body">
-<div class="mb-3">
-<label class="form-label" for="gregorianToHijriInput">عیسوی تاریخ (Gregorian Date):</label>
-<input class="form-control bg-secondary text-white border-0" id="gregorianToHijriInput" type="date"/>
-<button class="btn btn-primary mt-2 w-100" onclick="convertGregorianToHijri()">عیسوی سے ہجری
+        </div>
+    </nav>
+    <div class="main-content">
+        <h1 class="animate__animated animate__fadeInDown">سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز</h1>
+        <div class="container-card animate__animated animate__fadeInUp" id="birthCountdown">
+            <h2>ولادت کا وقت (Birth Countdown):</h2>
+            <div class="countdown-display" id="countdownBirth"></div>
+            <div class="total-info" id="totalDaysMonthsBirth"></div>
+            <h2>اگلی ولادت کی سالگرہ (Next Mawlid):</h2>
+            <div class="countdown-display" id="nextMawlidCountdown"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons"
+                    onclick="shareContent('nextMawlidCountdown', 'اگلی ولادت کی سالگرہ')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="deathCountdown">
+            <h2>وفات کا وقت (Death Countdown):</h2>
+            <div class="countdown-display" id="countdownDeath"></div>
+            <div class="total-info" id="totalDaysMonthsDeath"></div>
+            <h2>وفات کی اگلی سالگرہ (Next Death Anniversary):</h2>
+            <div class="countdown-display" id="nextDeathCountdown"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons"
+                    onclick="shareContent('nextDeathCountdown', 'وفات کی اگلی سالگرہ')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="todayInSeerah">
+            <h2>آج سیرت میں (On This Day in Seerah):</h2>
+            <div class="event-info" id="seerahEventToday"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons" onclick="shareContent('seerahEventToday', 'آج سیرت میں')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp hadith-container" id="hadithOfTheDay">
+            <h2>آج کی حدیث (Hadith of the Day):</h2>
+            <div class="hadith-text" id="currentHadith"></div>
+            <div class="total-info text-end" id="hadithSource"></div>
+            <div class="mt-3">
+                <button class="btn btn-info share-buttons" onclick="shareContent('currentHadith', 'آج کی حدیث')"><i
+                        class="fas fa-share-alt"></i></button>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="seerahEvents">
+            <h2>سیرتِ نبوی کے اہم واقعات (Key Events from Seerah):</h2>
+            <div class="timeline-container">
+                <div class="timeline" id="prophetTimeline">
+                </div>
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="asmaUlHusna">
+            <h2>اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna):</h2>
+            <div class="asma-list">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="prophetNames">
+            <h2>نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names &amp; Titles of the Prophet ﷺ):</h2>
+            <div class="prophet-names-list">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="prayerTimesSection">
+            <h2>اوقاتِ نماز (Prayer Times):</h2>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label" for="prayerLocation">اپنا شہر درج کریں (Enter your City):</label>
+                    <input class="form-control bg-secondary text-white border-0" id="prayerLocation"
+                        placeholder="مثلاً: لاہور, پاکستان" type="text" />
+                </div>
+                <div class="col-md-6 mt-3 mt-md-0">
+                    <label class="form-label" for="calculationMethod">طریقہ حساب (Calculation Method):</label>
+                    <select class="form-select bg-secondary text-white border-0" id="calculationMethod">
+                        <option value="Karachi">University of Islamic Sciences, Karachi</option>
+                        <option value="MuslimWorldLeague">Muslim World League</option>
+                        <option value="NorthAmerica">ISNA (North America)</option>
+                        <option value="UmmAlQura">Umm al-Qura University, Makkah</option>
+                        <option value="Egyptian">Egyptian General Authority of Survey</option>
+                        <option value="Tehran">Institute of Geophysics, University of Tehran</option>
+                        <option value="Turkey">Diyanet (Turkey)</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn btn-primary mb-3" onclick="getPrayerTimes()">اوقاتِ نماز حاصل کریں</button>
+            <div class="total-info" id="prayerTimesDisplay">
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="qiblaDirectionSection">
+            <h2>قبلہ کی سمت (Qibla Direction):</h2>
+            <div class="qibla-container">
+                <div class="compass-arrow" id="qiblaArrow"></div>
+                <i class="fas fa-compass fa-spin text-white" style="font-size: 80px;"></i>
+            </div>
+            <div id="qiblaMap"></div>
+            <div class="total-info mt-3" id="qiblaInfo">براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)
+            </div>
+        </div>
+        <div class="container-card animate__animated animate__fadeInUp" id="sourcesSection">
+            <h2>ماخذ اور کتابیات (Sources &amp; Bibliography):</h2>
+            <div class="total-info text-start">
+                <ul>
+                    <li>سیرت ابن ہشام (Seerat Ibn Hisham)</li>
+                    <li>صحیح بخاری (Sahih Bukhari)</li>
+                    <li>صحیح مسلم (Sahih Muslim)</li>
+                    <li>سنن ابی داؤد (Sunan Abu Dawud)</li>
+                    <li>جامع الترمذی (Jami` at-Tirmidhi)</li>
+                    <li>سنن نسائی (Sunan an-Nasa'i)</li>
+                    <li>سنن ابن ماجہ (Sunan Ibn Majah)</li>
+                    <li>(Additional scholarly Islamic texts and historical records)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="settingsModalLabel" class="modal fade" id="settingsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="settingsModalLabel">ترتیبات (Settings)</h5>
+                    <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="dateSettingsForm">
+                        <div class="mb-3">
+                            <label class="form-label" for="birthDateInput">تاریخِ ولادت (Gregorian Birth Date):</label>
+                            <input class="form-control bg-secondary text-white border-0" id="birthDateInput"
+                                type="date" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="deathDateInput">تاریخِ وفات (Gregorian Death Date):</label>
+                            <input class="form-control bg-secondary text-white border-0" id="deathDateInput"
+                                type="date" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block" id="theme-label">تھیم (Theme):</label>
+                            <div class="form-check form-check-inline">
+                                <input checked="" class="form-check-input" id="lightMode" name="themeMode" type="radio"
+                                    value="light" />
+                                <label class="form-check-label" for="lightMode">روشنی (Light)</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" id="darkMode" name="themeMode" type="radio"
+                                    value="dark" />
+                                <label class="form-check-label" for="darkMode">تاریک (Dark)</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label d-block" id="font-size-label">فونٹ سائز (Font Size):</label>
+                            <div class="font-size-controls">
+                                <button class="btn btn-sm btn-outline-light" onclick="changeFontSize(-2)"
+                                    type="button">A-</button>
+                                <button class="btn btn-sm btn-outline-light" onclick="changeFontSize(2)"
+                                    type="button">A+</button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label" for="languageSelect">زبان (Language):</label>
+                            <select class="form-select bg-secondary text-white border-0" id="languageSelect">
+                                <option value="ur">اردو (Urdu)</option>
+                                <option value="en">English</option>
+                                <option value="ar">العربية (Arabic)</option>
+                                <option value="id">Bahasa Indonesia</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit">محفوظ کریں (Save Changes)</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="eventDetailModalLabel" class="modal fade" id="eventDetailModal"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="eventDetailModalLabel">واقعہ کی تفصیل (Event Details)</h5>
+                    <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        type="button"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <h3 class="text-primary mb-3" id="modalEventTitle"></h3>
+                    <p id="modalEventGregorianDate"></p>
+                    <p id="modalEventHijriDate"></p>
+                    <p id="modalEventDescription"></p>
+                    <h6 class="mt-4"><span id="modal-source-label">حوالہ (Source): </span><span class="text-info"
+                            id="modalEventSource"></span></h6>
+                </div>
+                <div class="modal-footer border-top-0">
+                    <button class="btn btn-secondary" data-bs-dismiss="modal" type="button">بند کریں (Close)</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="dateConverterModalLabel" class="modal fade" id="dateConverterModal"
+        tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-bottom-0">
+                    <h5 class="modal-title" id="dateConverterModalLabel">تاریخ کنورٹر (Date Converter)</h5>
+                    <button aria-label="Close" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        type="button"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label" for="gregorianToHijriInput">عیسوی تاریخ (Gregorian Date):</label>
+                        <input class="form-control bg-secondary text-white border-0" id="gregorianToHijriInput"
+                            type="date" />
+                        <button class="btn btn-primary mt-2 w-100" onclick="convertGregorianToHijri()">عیسوی سے ہجری
                             (Gregorian to Hijri)</button>
-<p class="mt-2" id="convertedHijriDate"></p>
-</div>
-<hr/>
-<div class="mb-3">
-<label class="form-label" for="hijriYearInput">ہجری سال (Hijri Year):</label>
-<input class="form-control bg-secondary text-white border-0" id="hijriYearInput" min="1" type="number" value="1445"/>
-<label class="form-label" for="hijriMonthInput">ہجری ماہ (Hijri Month):</label>
-<select class="form-select bg-secondary text-white border-0" id="hijriMonthInput">
-<option value="1">محرم (Muharram)</option>
-<option value="2">صفر (Safar)</option>
-<option value="3">ربیع الاول (Rabi' al-Awwal)</option>
-<option value="4">ربیع الثانی (Rabi' al-Thani)</option>
-<option value="5">جمادی الاول (Jumada al-Ula)</option>
-<option value="6">جمادی الثانی (Jumada al-Akhira)</option>
-<option value="7">رجب (Rajab)</option>
-<option value="8">شعبان (Sha'ban)</option>
-<option value="9">رمضان (Ramadan)</option>
-<option value="10">شوال (Shawwal)</option>
-<option value="11">ذوالقعدہ (Dhul-Qadah)</option>
-<option value="12">ذوالحجہ (Dhul-Hijjah)</option>
-</select>
-<label class="form-label" for="hijriDayInput">ہجری دن (Hijri Day):</label>
-<input class="form-control bg-secondary text-white border-0" id="hijriDayInput" max="30" min="1" type="number" value="1"/>
-<button class="btn btn-primary mt-2 w-100" onclick="convertHijriToGregorian()">ہجری سے عیسوی
+                        <p class="mt-2" id="convertedHijriDate"></p>
+                    </div>
+                    <hr />
+                    <div class="mb-3">
+                        <label class="form-label" for="hijriYearInput">ہجری سال (Hijri Year):</label>
+                        <input class="form-control bg-secondary text-white border-0" id="hijriYearInput" min="1"
+                            type="number" value="1445" />
+                        <label class="form-label" for="hijriMonthInput">ہجری ماہ (Hijri Month):</label>
+                        <select class="form-select bg-secondary text-white border-0" id="hijriMonthInput">
+                            <option value="1">محرم (Muharram)</option>
+                            <option value="2">صفر (Safar)</option>
+                            <option value="3">ربیع الاول (Rabi' al-Awwal)</option>
+                            <option value="4">ربیع الثانی (Rabi' al-Thani)</option>
+                            <option value="5">جمادی الاول (Jumada al-Ula)</option>
+                            <option value="6">جمادی الثانی (Jumada al-Akhira)</option>
+                            <option value="7">رجب (Rajab)</option>
+                            <option value="8">شعبان (Sha'ban)</option>
+                            <option value="9">رمضان (Ramadan)</option>
+                            <option value="10">شوال (Shawwal)</option>
+                            <option value="11">ذوالقعدہ (Dhul-Qadah)</option>
+                            <option value="12">ذوالحجہ (Dhul-Hijjah)</option>
+                        </select>
+                        <label class="form-label" for="hijriDayInput">ہجری دن (Hijri Day):</label>
+                        <input class="form-control bg-secondary text-white border-0" id="hijriDayInput" max="30" min="1"
+                            type="number" value="1" />
+                        <button class="btn btn-primary mt-2 w-100" onclick="convertHijriToGregorian()">ہجری سے عیسوی
                             (Hijri to Gregorian)</button>
-<p class="mt-2" id="convertedGregorianDate"></p>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="footer">
-<p>© 2023 Yasin Ullah, Pakistan. All rights reserved.</p>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="app.js"></script>
-<script src="adhan.umd.min.js"></script>
-<script>
+                        <p class="mt-2" id="convertedGregorianDate"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <p>© 2023 Yasin Ullah, Pakistan. All rights reserved.</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+    <script src="adhan.umd.min.js"></script>
+    <script>
         let prophetMuhammadBirthDateGregorian, prophetMuhammadDeathDateGregorian;
         let currentTheme = 'light';
         let currentFontSize = 16;
@@ -816,40 +847,40 @@
         const translations = {
             ur: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "سیدنا محمد (صلی اللہ علیہ و سلم) اسلامی مرکز",
-                "ولادت کا وقت (Birth Countdown):": "ولادت کا وقت:",
-                "وفات کا وقت (Death Countdown):": "وفات کا وقت:",
-                "اگلی ولادت کی سالگرہ (Next Mawlid)": "اگلی ولادت کی سالگرہ:",
-                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "وفات کی اگلی سالگرہ:",
-                "آج سیرت میں (On This Day in Seerah)": "آج سیرت میں:",
-                "آج کی حدیث (Hadith of the Day)": "آج کی حدیث:",
-                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "اللہ کے 99 نام (اسمائے حسنیٰ):",
-                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب:",
-                "اوقاتِ نماز (Prayer Times)": "اوقاتِ نماز:",
-                "قبلہ کی سمت (Qibla Direction)": "قبلہ کی سمت:",
-                "ماخذ اور کتابیات (Sources & Bibliography)": "ماخذ اور کتابیات:",
+                "ولادت کا وقت (Birth Countdown)": "ولادت کا وقت",
+                "وفات کا وقت (Death Countdown)": "وفات کا وقت",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "اگلی ولادت کی سالگرہ",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "وفات کی اگلی سالگرہ",
+                "آج سیرت میں (On This Day in Seerah)": "آج سیرت میں",
+                "آج کی حدیث (Hadith of the Day)": "آج کی حدیث",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "اللہ کے 99 نام (اسمائے حسنیٰ)",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب",
+                "اوقاتِ نماز (Prayer Times)": "اوقاتِ نماز",
+                "قبلہ کی سمت (Qibla Direction)": "قبلہ کی سمت",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "ماخذ اور کتابیات",
                 "تاریخیں ترتیب دیں (Set Dates)": "تاریخیں ترتیب دیں",
-                "تاریخِ ولادت (Gregorian Birth Date)": "تاریخِ ولادت (عیسوی):",
-                "تاریخِ وفات (Gregorian Death Date)": "تاریخِ وفات (عیسوی):",
-                "تھیم (Theme)": "تھیم:",
+                "تاریخِ ولادت (Gregorian Birth Date)": "تاریخِ ولادت (عیسوی)",
+                "تاریخِ وفات (Gregorian Death Date)": "تاریخِ وفات (عیسوی)",
+                "تھیم (Theme)": "تھیم",
                 "روشنی (Light)": "روشنی",
                 "تاریک (Dark)": "تاریک",
-                "فونٹ سائز (Font Size)": "فونٹ سائز:",
-                "زبان (Language)": "زبان:",
+                "فونٹ سائز (Font Size)": "فونٹ سائز",
+                "زبان (Language)": "زبان",
                 "محفوظ کریں (Save Changes)": "محفوظ کریں",
                 "واقعہ کی تفصیل (Event Details)": "واقعہ کی تفصیل",
-                "حوالہ (Source)": "حوالہ:",
+                "حوالہ (Source)": "حوالہ",
                 "بند کریں (Close)": "بند کریں",
                 "تاریخ کنورٹر (Date Converter)": "تاریخ کنورٹر",
-                "عیسوی تاریخ (Gregorian Date)": "عیسوی تاریخ:",
+                "عیسوی تاریخ (Gregorian Date)": "عیسوی تاریخ",
                 "عیسوی سے ہجری (Gregorian to Hijri)": "عیسوی سے ہجری",
-                "ہجری سال (Hijri Year)": "ہجری سال:",
-                "ہجری ماہ (Hijri Month)": "ہجری ماہ:",
-                "ہجری دن (Hijri Day)": "ہجری دن:",
+                "ہجری سال (Hijri Year)": "ہجری سال",
+                "ہجری ماہ (Hijri Month)": "ہجری ماہ",
+                "ہجری دن (Hijri Day)": "ہجری دن",
                 "ہجری سے عیسوی (Hijri to Gregorian)": "ہجری سے عیسوی",
-                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "سیرتِ نبوی کے اہم واقعات:",
-                "اپنا شہر درج کریں (Enter your City)": "اپنا شہر درج کریں:",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "سیرتِ نبوی کے اہم واقعات",
+                "اپنا شہر درج کریں (Enter your City)": "اپنا شہر درج کریں",
                 "مثلاً: لاہور, پاکستان": "مثلاً: لاہور, پاکستان",
-                "طریقہ حساب (Calculation Method)": "طریقہ حساب:",
+                "طریقہ حساب (Calculation Method)": "طریقہ حساب",
                 "اوقاتِ نماز حاصل کریں": "اوقاتِ نماز حاصل کریں",
                 "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "براہ کرم مقام کی اجازت دیں۔",
                 "سال (Years)": "سال",
@@ -858,8 +889,8 @@
                 "گھنٹے (Hours)": "گھنٹے",
                 "منٹ (Minutes)": "منٹ",
                 "سیکنڈ (Seconds)": "سیکنڈ",
-                "کل دن": "کل دن:",
-                "کل ماہ": "کل ماہ:",
+                "کل دن": "کل دن",
+                "کل ماہ": "کل ماہ",
                 "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "ڈیٹا کامیابی سے بحال ہو گیا ہے!",
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔",
@@ -867,40 +898,40 @@
             },
             en: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "Prophet Muhammad (PBUH) Islamic Hub",
-                "ولادت کا وقت (Birth Countdown):": "Time Since Birth:",
-                "وفات کا وقت (Death Countdown):": "Time Since Death:",
-                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Next Birth Anniversary (Mawlid):",
-                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Next Death Anniversary:",
-                "آج سیرت میں (On This Day in Seerah)": "On This Day in Seerah:",
-                "آج کی حدیث (Hadith of the Day)": "Hadith of the Day:",
-                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Names of Allah (Asma-ul-Husna):",
-                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Names & Titles of the Prophet (PBUH):",
-                "اوقاتِ نماز (Prayer Times)": "Prayer Times:",
-                "قبلہ کی سمت (Qibla Direction)": "Qibla Direction:",
-                "ماخذ اور کتابیات (Sources & Bibliography)": "Sources & Bibliography:",
+                "ولادت کا وقت (Birth Countdown)": "Time Since Birth",
+                "وفات کا وقت (Death Countdown)": "Time Since Death",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Next Birth Anniversary (Mawlid)",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Next Death Anniversary",
+                "آج سیرت میں (On This Day in Seerah)": "On This Day in Seerah",
+                "آج کی حدیث (Hadith of the Day)": "Hadith of the Day",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Names of Allah (Asma-ul-Husna)",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Names & Titles of the Prophet (PBUH)",
+                "اوقاتِ نماز (Prayer Times)": "Prayer Times",
+                "قبلہ کی سمت (Qibla Direction)": "Qibla Direction",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "Sources & Bibliography",
                 "تاریخیں ترتیب دیں (Set Dates)": "Set Dates",
-                "تاریخِ ولادت (Gregorian Birth Date)": "Gregorian Birth Date:",
-                "تاریخِ وفات (Gregorian Death Date)": "Gregorian Death Date:",
-                "تھیم (Theme)": "Theme:",
+                "تاریخِ ولادت (Gregorian Birth Date)": "Gregorian Birth Date",
+                "تاریخِ وفات (Gregorian Death Date)": "Gregorian Death Date",
+                "تھیم (Theme)": "Theme",
                 "روشنی (Light)": "Light",
                 "تاریک (Dark)": "Dark",
-                "فونٹ سائز (Font Size)": "Font Size:",
-                "زبان (Language)": "Language:",
+                "فونٹ سائز (Font Size)": "Font Size",
+                "زبان (Language)": "Language",
                 "محفوظ کریں (Save Changes)": "Save Changes",
                 "واقعہ کی تفصیل (Event Details)": "Event Details",
-                "حوالہ (Source)": "Source:",
+                "حوالہ (Source)": "Source",
                 "بند کریں (Close)": "Close",
                 "تاریخ کنورٹر (Date Converter)": "Date Converter",
-                "عیسوی تاریخ (Gregorian Date)": "Gregorian Date:",
+                "عیسوی تاریخ (Gregorian Date)": "Gregorian Date",
                 "عیسوی سے ہجری (Gregorian to Hijri)": "Gregorian to Hijri",
-                "ہجری سال (Hijri Year)": "Hijri Year:",
-                "ہجری ماہ (Hijri Month)": "Hijri Month:",
-                "ہجری دن (Hijri Day)": "Hijri Day:",
+                "ہجری سال (Hijri Year)": "Hijri Year",
+                "ہجری ماہ (Hijri Month)": "Hijri Month",
+                "ہجری دن (Hijri Day)": "Hijri Day",
                 "ہجری سے عیسوی (Hijri to Gregorian)": "Hijri to Gregorian",
-                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Key Events from Seerah:",
-                "اپنا شہر درج کریں (Enter your City)": "Enter your City:",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Key Events from Seerah",
+                "اپنا شہر درج کریں (Enter your City)": "Enter your City",
                 "مثلاً: لاہور, پاکستان": "e.g., Lahore, Pakistan",
-                "طریقہ حساب (Calculation Method)": "Calculation Method:",
+                "طریقہ حساب (Calculation Method)": "Calculation Method",
                 "اوقاتِ نماز حاصل کریں": "Get Prayer Times",
                 "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "Please allow location access.",
                 "سال (Years)": "years",
@@ -909,8 +940,8 @@
                 "گھنٹے (Hours)": "hours",
                 "منٹ (Minutes)": "minutes",
                 "سیکنڈ (Seconds)": "seconds",
-                "کل دن": "Total Days:",
-                "کل ماہ": "Total Months:",
+                "کل دن": "Total Days",
+                "کل ماہ": "Total Months",
                 "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "Data restored successfully!",
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "Imported file does not contain valid dates.",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "Error reading file. It might not be a valid JSON.",
@@ -918,40 +949,40 @@
             },
             ar: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "المركز الإسلامي للنبي محمد (صلى الله عليه وسلم)",
-                "ولادت کا وقت (Birth Countdown):": "الوقت منذ الميلاد:",
-                "وفات کا وقت (Death Countdown):": "الوقت منذ الوفاة:",
-                "اگلی ولادت کی سالگرہ (Next Mawlid)": "المولد النبوي القادم:",
-                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "ذكرى الوفاة القادمة:",
-                "آج سیرت میں (On This Day in Seerah)": "في مثل هذا اليوم من السيرة:",
-                "آج کی حدیث (Hadith of the Day)": "حديث اليوم:",
-                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "أسماء الله الحسنى (99 اسمًا):",
-                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "أسماء وألقاب النبي (صلى الله عليه وسلم):",
-                "اوقاتِ نماز (Prayer Times)": "مواقيت الصلاة:",
-                "قبلہ کی سمت (Qibla Direction)": "اتجاه القبلة:",
-                "ماخذ اور کتابیات (Sources & Bibliography)": "المصادر والمراجع:",
+                "ولادت کا وقت (Birth Countdown)": "الوقت منذ الميلاد",
+                "وفات کا وقت (Death Countdown)": "الوقت منذ الوفاة",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "المولد النبوي القادم",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "ذكرى الوفاة القادمة",
+                "آج سیرت میں (On This Day in Seerah)": "في مثل هذا اليوم من السيرة",
+                "آج کی حدیث (Hadith of the Day)": "حديث اليوم",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "أسماء الله الحسنى (99 اسمًا)",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "أسماء وألقاب النبي (صلى الله عليه وسلم)",
+                "اوقاتِ نماز (Prayer Times)": "مواقيت الصلاة",
+                "قبلہ کی سمت (Qibla Direction)": "اتجاه القبلة",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "المصادر والمراجع",
                 "تاریخیں ترتیب دیں (Set Dates)": "تحديد التواريخ",
-                "تاریخِ ولادت (Gregorian Birth Date)": "تاريخ الميلاد (ميلادي):",
-                "تاریخِ وفات (Gregorian Death Date)": "تاريخ الوفاة (ميلادي):",
-                "تھیم (Theme)": "الوضع:",
+                "تاریخِ ولادت (Gregorian Birth Date)": "تاريخ الميلاد (ميلادي)",
+                "تاریخِ وفات (Gregorian Death Date)": "تاريخ الوفاة (ميلادي)",
+                "تھیم (Theme)": "الوضع",
                 "روشنی (Light)": "فاتح",
                 "تاریک (Dark)": "داكن",
-                "فونٹ سائز (Font Size)": "حجم الخط:",
-                "زبان (Language)": "اللغة:",
+                "فونٹ سائز (Font Size)": "حجم الخط",
+                "زبان (Language)": "اللغة",
                 "محفوظ کریں (Save Changes)": "حفظ التغييرات",
                 "واقعہ کی تفصیل (Event Details)": "تفاصيل الحدث",
-                "حوالہ (Source)": "المصدر:",
+                "حوالہ (Source)": "المصدر",
                 "بند کریں (Close)": "إغلاق",
                 "تاریخ کنورٹر (Date Converter)": "محول التاريخ",
-                "عیسوی تاریخ (Gregorian Date)": "التاريخ الميلادي:",
+                "عیسوی تاریخ (Gregorian Date)": "التاريخ الميلادي",
                 "عیسوی سے ہجری (Gregorian to Hijri)": "ميلادي إلى هجري",
-                "ہجری سال (Hijri Year)": "السنة الهجرية:",
-                "ہجری ماہ (Hijri Month)": "الشهر الهجري:",
-                "ہجری دن (Hijri Day)": "اليوم الهجري:",
+                "ہجری سال (Hijri Year)": "السنة الهجرية",
+                "ہجری ماہ (Hijri Month)": "الشهر الهجري",
+                "ہجری دن (Hijri Day)": "اليوم الهجري",
                 "ہجری سے عیسوی (Hijri to Gregorian)": "هجري إلى ميلادي",
-                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "أحداث مهمة من السيرة النبوية:",
-                "اپنا شہر درج کریں (Enter your City)": "أدخل مدينتك:",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "أحداث مهمة من السيرة النبوية",
+                "اپنا شہر درج کریں (Enter your City)": "أدخل مدينتك",
                 "مثلاً: لاہور, پاکستان": "مثال: القاهرة، مصر",
-                "طریقہ حساب (Calculation Method)": "طريقة الحساب:",
+                "طریقہ حساب (Calculation Method)": "طريقة الحساب",
                 "اوقاتِ نماز حاصل کریں": "الحصول على أوقات الصلاة",
                 "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "يرجى السماح بالوصول إلى الموقع.",
                 "سال (Years)": "سنوات",
@@ -960,8 +991,8 @@
                 "گھنٹے (Hours)": "ساعات",
                 "منٹ (Minutes)": "دقائق",
                 "سیکنڈ (Seconds)": "ثواني",
-                "کل دن": "إجمالي الأيام:",
-                "کل ماہ": "إجمالي الأشهر:",
+                "کل دن": "إجمالي الأيام",
+                "کل ماہ": "إجمالي الأشهر",
                 "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "تم استعادة البيانات بنجاح!",
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "الملف المستورد لا يحتوي على تواريخ صالحة.",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "حدث خطأ أثناء قراءة الملف. قد لا يكون ملف JSON صالحًا.",
@@ -969,40 +1000,40 @@
             },
             id: {
                 "Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub": "Pusat Islam Nabi Muhammad (SAW)",
-                "ولادت کا وقت (Birth Countdown):": "Waktu Sejak Kelahiran:",
-                "وفات کا وقت (Death Countdown):": "Waktu Sejak Wafat:",
-                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Peringatan Maulid Nabi Berikutnya:",
-                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Peringatan Wafat Nabi Berikutnya:",
-                "آج سیرت میں (On This Day in Seerah)": "Hari Ini dalam Sirah Nabawiyah:",
-                "آج کی حدیث (Hadith of the Day)": "Hadits Hari Ini:",
-                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Nama Allah (Asma-ul-Husna):",
-                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Nama & Gelar Nabi Muhammad (SAW):",
-                "اوقاتِ نماز (Prayer Times)": "Waktu Sholat:",
-                "قبلہ کی سمت (Qibla Direction)": "Arah Kiblat:",
-                "ماخذ اور کتابیات (Sources & Bibliography)": "Sumber & Referensi:",
+                "ولادت کا وقت (Birth Countdown)": "Waktu Sejak Kelahiran",
+                "وفات کا وقت (Death Countdown)": "Waktu Sejak Wafat",
+                "اگلی ولادت کی سالگرہ (Next Mawlid)": "Peringatan Maulid Nabi Berikutnya",
+                "وفات کی اگلی سالگرہ (Next Death Anniversary)": "Peringatan Wafat Nabi Berikutnya",
+                "آج سیرت میں (On This Day in Seerah)": "Hari Ini dalam Sirah Nabawiyah",
+                "آج کی حدیث (Hadith of the Day)": "Hadits Hari Ini",
+                "اللہ کے 99 نام (99 Names of Allah - Asma-ul-Husna)": "99 Nama Allah (Asma-ul-Husna)",
+                "نبی اکرم (صلی اللہ علیہ و سلم) کے القاب (Names & Titles of the Prophet ﷺ)": "Nama & Gelar Nabi Muhammad (SAW)",
+                "اوقاتِ نماز (Prayer Times)": "Waktu Sholat",
+                "قبلہ کی سمت (Qibla Direction)": "Arah Kiblat",
+                "ماخذ اور کتابیات (Sources & Bibliography)": "Sumber & Referensi",
                 "تاریخیں ترتیب دیں (Set Dates)": "Atur Tanggal",
-                "تاریخِ ولادت (Gregorian Birth Date)": "Tanggal Lahir (Masehi):",
-                "تاریخِ وفات (Gregorian Death Date)": "Tanggal Wafat (Masehi):",
-                "تھیم (Theme)": "Tema:",
+                "تاریخِ ولادت (Gregorian Birth Date)": "Tanggal Lahir (Masehi)",
+                "تاریخِ وفات (Gregorian Death Date)": "Tanggal Wafat (Masehi)",
+                "تھیم (Theme)": "Tema",
                 "روشنی (Light)": "Terang",
                 "تاریک (Dark)": "Gelap",
-                "فونٹ سائز (Font Size)": "Ukuran Huruf:",
-                "زبان (Language)": "Bahasa:",
+                "فونٹ سائز (Font Size)": "Ukuran Huruf",
+                "زبان (Language)": "Bahasa",
                 "محفوظ کریں (Save Changes)": "Simpan Perubahan",
                 "واقعہ کی تفصیل (Event Details)": "Detail Acara",
-                "حوالہ (Source)": "Sumber:",
+                "حوالہ (Source)": "Sumber",
                 "بند کریں (Close)": "Tutup",
                 "تاریخ کنورٹر (Date Converter)": "Konverter Tanggal",
-                "عیسوی تاریخ (Gregorian Date)": "Tanggal Masehi:",
+                "عیسوی تاریخ (Gregorian Date)": "Tanggal Masehi",
                 "عیسوی سے ہجری (Gregorian to Hijri)": "Masehi ke Hijriah",
-                "ہجری سال (Hijri Year)": "Tahun Hijriah:",
-                "ہجری ماہ (Hijri Month)": "Bulan Hijriah:",
-                "ہجری دن (Hijri Day)": "Hari Hijriah:",
+                "ہجری سال (Hijri Year)": "Tahun Hijriah",
+                "ہجری ماہ (Hijri Month)": "Bulan Hijriah",
+                "ہجری دن (Hijri Day)": "Hari Hijriah",
                 "ہجری سے عیسوی (Hijri to Gregorian)": "Hijriah ke Masehi",
-                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Peristiwa Penting dari Sirah:",
-                "اپنا شہر درج کریں (Enter your City)": "Masukkan Kota Anda:",
+                "سیرتِ نبوی کے اہم واقعات (Key Events from Seerah)": "Peristiwa Penting dari Sirah",
+                "اپنا شہر درج کریں (Enter your City)": "Masukkan Kota Anda",
                 "مثلاً: لاہور, پاکستان": "Contoh: Jakarta, Indonesia",
-                "طریقہ حساب (Calculation Method)": "Metode Perhitungan:",
+                "طریقہ حساب (Calculation Method)": "Metode Perhitungan",
                 "اوقاتِ نماز حاصل کریں": "Dapatkan Waktu Sholat",
                 "براہ کرم مقام کی اجازت دیں۔ (Please allow location access.)": "Mohon izinkan akses lokasi.",
                 "سال (Years)": "tahun",
@@ -1011,8 +1042,8 @@
                 "گھنٹے (Hours)": "jam",
                 "منٹ (Minutes)": "menit",
                 "سیکنڈ (Seconds)": "detik",
-                "کل دن": "Total Hari:",
-                "کل ماہ": "Total Bulan:",
+                "کل دن": "Total Hari",
+                "کل ماہ": "Total Bulan",
                 "ڈیٹا کامیابی سے بحال ہو گیا ہے! (Data restored successfully!)": "Data berhasil dipulihkan!",
                 "درآمد شدہ فائل میں درست تاریخیں موجود نہیں ہیں۔ (Imported file does not contain valid dates.)": "File yang diimpor tidak mengandung tanggal yang valid.",
                 "فائل پڑھنے میں خرابی پیش آئی۔ یہ ایک درست JSON فائل نہیں ہے۔ (Error reading file. It might not be a valid JSON.)": "Terjadi kesalahan saat membaca file. Mungkin bukan file JSON yang valid.",
@@ -1028,8 +1059,8 @@
                 }
             });
             document.querySelector('h1').textContent = translations[currentLanguage]["Prophet Muhammad (صلی اللہ علیہ و سلم) Islamic Hub"];
-            document.querySelector('#birthCountdown h2').textContent = translations[currentLanguage]["ولادت کا وقت (Birth Countdown):"];
-            document.querySelector('#deathCountdown h2').textContent = translations[currentLanguage]["وفات کا وقت (Death Countdown):"];
+            document.querySelector('#birthCountdown h2').textContent = translations[currentLanguage]["ولادت کا وقت (Birth Countdown)"];
+            document.querySelector('#deathCountdown h2').textContent = translations[currentLanguage]["وفات کا وقت (Death Countdown)"];
             document.querySelector('#birthCountdown h2:nth-of-type(2)').textContent = translations[currentLanguage]["اگلی ولادت کی سالگرہ (Next Mawlid)"];
             document.querySelector('#deathCountdown h2:nth-of-type(2)').textContent = translations[currentLanguage]["وفات کی اگلی سالگرہ (Next Death Anniversary)"];
             document.querySelector('#todayInSeerah h2').textContent = translations[currentLanguage]["آج سیرت میں (On This Day in Seerah)"];
@@ -1131,7 +1162,7 @@
             const hours = totalHours % 24;
             const minutes = totalMinutes % 60;
             const seconds = totalSeconds % 60;
-            const sign = ms < 0 ? translations[currentLanguage]["باقی:"] || "Remaining:" : "";
+            const sign = ms < 0 ? translations[currentLanguage]["باقی"] || "Remaining" : "";
             return `${sign} ${years} ${translations[currentLanguage]["سال (Years)"]}
                     ${months} ${translations[currentLanguage]["ماہ (Months)"]}
                     ${remainingDaysAfterMonths} ${translations[currentLanguage]["دن (Days)"]}
@@ -1333,7 +1364,7 @@
                 (error) => {
                     document.getElementById('prayerTimesDisplay').innerHTML = `اوقاتِ نماز حاصل کرنے میں خرابی: ${error.message} (Error getting prayer times: ${error.message})`;
                     document.getElementById('qiblaInfo').textContent = 'مقام کی اجازت درکار ہے۔ (Location permission required.)';
-                    console.error("Geolocation Error:", error);
+                    console.error("Geolocation Error", error);
                 }, {
                 enableHighAccuracy: true,
                 timeout: 10000,
@@ -1487,7 +1518,7 @@
                     currentFontSize = data.fontSize || 16;
                     currentLanguage = data.language || 'ur';
                 } catch (e) {
-                    console.error("Error parsing stored data, using defaults:", e);
+                    console.error("Error parsing stored data, using defaults", e);
                     resetToDefaults();
                 }
             } else {
@@ -1566,22 +1597,24 @@
         });
     </script>
 
-<script type="module">
-  import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
+    <script type="module">
+        import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 
-  const swUrl = './sw.js';
-  const wb = new Workbox(swUrl);
+        const swUrl = './sw.js';
+        const wb = new Workbox(swUrl);
 
-  wb.addEventListener('waiting', (event) => {
-    console.log('A new service worker is waiting to activate.');
-    wb.messageSW({ type: 'SKIP_WAITING' });
-  });
+        wb.addEventListener('waiting', (event) => {
+            console.log('A new service worker is waiting to activate.');
+            wb.messageSW({ type: 'SKIP_WAITING' });
+        });
 
-  wb.addEventListener('controlling', (event) => {
-    console.log('The new service worker is now in control. Reloading page for updates...');
-    window.location.reload();
-  });
+        wb.addEventListener('controlling', (event) => {
+            console.log('The new service worker is now in control. Reloading page for updates...');
+            window.location.reload();
+        });
 
-  wb.register();
-</script></body>
+        wb.register();
+    </script>
+</body>
+
 </html>
