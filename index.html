@@ -607,7 +607,6 @@
 <script src="app.js"></script>
 <script src="adhan.umd.min.js"></script>
 <script>
-        alert("updated");
         let qiblaAngle = 0;
         let prophetMuhammadBirthDateGregorian, prophetMuhammadDeathDateGregorian;
         let currentTheme = 'light';
@@ -1627,18 +1626,43 @@
             updateCountdown();
             setInterval(updateCountdown, 1000);
             getPrayerTimes();
-            window.addEventListener('deviceorientationabsolute', (event) => {
-                if (event.alpha) {
-                    // Subtract device heading from Qibla angle to get correct arrow direction
-                    const rotation = qiblaAngle - event.alpha;
-                    document.getElementById('qiblaArrow').style.transform = `rotate(${rotation}deg)`;
+            // --- Start of New Compass Code ---
+
+const handleOrientation = (event) => {
+    // Fallback for older browsers
+    const heading = event.webkitCompassHeading || event.alpha;
+
+    if (heading !== null) {
+        const rotation = qiblaAngle - heading;
+        document.getElementById('qiblaArrow').style.transform = `rotate(${rotation}deg)`;
+    }
+};
+
+// Check if we need to request permission (for iOS 13+)
+if (typeof DeviceOrientationEvent !== 'undefined' && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    // We're likely on iOS, so we need to ask for permission
+    window.addEventListener('click', () => {
+         DeviceOrientationEvent.requestPermission()
+            .then(state => {
+                if (state === 'granted') {
+                    window.addEventListener('deviceorientation', handleOrientation, true);
+                } else {
+                    console.error('Permission for device orientation not granted.');
                 }
-            }, true);
+            })
+            .catch(console.error);
+    }, { once: true }); // This click listener will only run once
+
+} else {
+    // We're likely on Android or an older device, no permission needed
+    window.addEventListener('deviceorientationabsolute', handleOrientation, true);
+}
+
+// --- End of New Compass Code ---
         });
         document.querySelectorAll('*').forEach(el => el.setAttribute('dir', 'auto'));
 
     </script>
-
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 

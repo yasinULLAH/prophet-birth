@@ -49,10 +49,6 @@ if (workbox) {
         "revision": "600d03e5968eaf1d0cfb6cd46e87a29a"
     },
     {
-        "url": ".gitattributes",
-        "revision": "05bdb783ee6514c8c072e47680af8ff7"
-    },
-    {
         "url": "adhan.umd.min.js",
         "revision": "3d1e269055e0297fa0dc2b320e9ca36f"
     },
@@ -78,7 +74,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "cf2eb7c7e2c0045ea98cfb2b25e679e4"
+        "revision": "3dee60a94fae64e00c4a4a1b6730f94d"
     },
     {
         "url": "index.php",
@@ -118,7 +114,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "a1a3bd5edb4154df8944286e71a2e17e"
+        "revision": "01deb8a0feabf6a279e943bc6b800d0d"
     },
     {
         "url": "sessions/sess_4uu4st3e68dndgjnbmih15009d",
