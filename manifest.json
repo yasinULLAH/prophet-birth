@@ -1,7 +1,7 @@
 {
   "name": "Prophet Muhammad (\u0635\u0644\u06cc \u0627\u0644\u0644\u06c1 \u0639\u0644\u06cc\u06c1 \u0648 \u0633\u0644\u0645) Islamic Hub",
   "short_name": "Prophet Muhammad (\u0635\u0644\u06cc \u0627\u0644\u0644\u06c1 \u0639\u0644\u06cc\u06c1 \u0648 \u0633\u0644\u0645) Islamic Hub",
-  "description": "A comprehensive Islamic application dedicated to Prophet Muhammad (PBUH), featuring Hijri calendar, event timelines, Hadith, Asma-ul-Husna, prayer times, Qibla direction, and more.",
+  "description": "A description of the web application.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",

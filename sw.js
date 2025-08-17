@@ -45,6 +45,10 @@ if (workbox) {
         "revision": "79cf656a0d5527bd318370d8a4ef1e3c"
     },
     {
+        "url": "favicon.ico",
+        "revision": "600d03e5968eaf1d0cfb6cd46e87a29a"
+    },
+    {
         "url": ".gitattributes",
         "revision": "05bdb783ee6514c8c072e47680af8ff7"
     },
@@ -58,7 +62,7 @@ if (workbox) {
     },
     {
         "url": "build pwa make html app offline and installable yasin best working re-run this for updates best for html only.py",
-        "revision": "912a9d55d74613b8f4f07180d0df1fd3"
+        "revision": "129d39b2e24f7bfd135b0d3b4ac1ac77"
     },
     {
         "url": "build pwa make html app offline and installable yasin best working re-run this for updates best for php file.py",
@@ -69,16 +73,12 @@ if (workbox) {
         "revision": "3a8a91d738c617c4413012d29ede3978"
     },
     {
-        "url": "favicon.ico",
-        "revision": "2ccb4c012761e3643dd2663117902357"
-    },
-    {
         "url": "hadith.php",
         "revision": "d1d35364a7048a09baaa0990ef683bf6"
     },
     {
         "url": "index.html",
-        "revision": "9fdabd4c20257e2d3d5ef8faefa8e99e"
+        "revision": "b4edadf5b9a9c13b9574d57632337cb9"
     },
     {
         "url": "index.php",
@@ -94,11 +94,11 @@ if (workbox) {
     },
     {
         "url": "manifest.json",
-        "revision": "ab9e19d667c4ced63e6c2d6af270da64"
+        "revision": "6d1f6681b1a2b43dfbf5af8b96677356"
     },
     {
         "url": "offline.html",
-        "revision": "8f26b38cf3f9126c6a161c45ddd6301c"
+        "revision": "d4abf195a397da3260609d73dcb67d04"
     },
     {
         "url": "prophet_islamic_hub_data.json",
@@ -118,7 +118,11 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "218edf8df02e4f71ef6c3927f9231e0d"
+        "revision": "58081d83a51fd7463fb1c92733a54017"
+    },
+    {
+        "url": "sessions/sess_4uu4st3e68dndgjnbmih15009d",
+        "revision": "d41d8cd98f00b204e9800998ecf8427e"
     },
     {
         "url": "sessions/sess_du8klafn3ios2gl1c074qa0136",
@@ -131,6 +135,10 @@ if (workbox) {
     {
         "url": "sessions/sess_enaojv0tv3sr99slhmketa0b1h",
         "revision": "a73f9468277063dfa9a5b8472d6c16ee"
+    },
+    {
+        "url": "sessions/sess_ki6rvn020t9ud19k1pamto0sgf",
+        "revision": "d41d8cd98f00b204e9800998ecf8427e"
     }
 ]);
 

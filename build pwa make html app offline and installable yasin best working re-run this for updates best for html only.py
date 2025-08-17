@@ -5,7 +5,7 @@ import hashlib
 from PIL import Image
 from bs4 import BeautifulSoup
 
-SOURCE_LOGO_PATH = r"C:\Users\Yasin\Downloads\Yasin Soft\logo.png"
+SOURCE_LOGO_PATH = r"logo.jpg"
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 APP_NAME = "My Web App"
 SHORT_NAME = "WebApp"
