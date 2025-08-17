@@ -350,9 +350,8 @@
             }
         }
     </style>
-<link href="manifest.json" rel="manifest">
+<link href="manifest.json" rel="manifest"/>
 <link href="favicon.ico" rel="icon" type="image/x-icon"/>
-</link>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark">
@@ -608,6 +607,8 @@
 <script src="app.js"></script>
 <script src="adhan.umd.min.js"></script>
 <script>
+        alert("updated");
+        let qiblaAngle = 0;
         let prophetMuhammadBirthDateGregorian, prophetMuhammadDeathDateGregorian;
         let currentTheme = 'light';
         let currentFontSize = 16;
@@ -1420,8 +1421,8 @@
                 document.getElementById('qiblaInfo').textContent = 'مقام دستیاب نہیں ہے۔ (Location not available.)';
                 return;
             }
-            const qiblaAngle = adhan.Qibla(new adhan.Coordinates(location.latitude, location.longitude));
-            document.getElementById('qiblaArrow').style.transform = `rotate(${qiblaAngle}deg)`;
+            let qiblaAngle = adhan.Qibla(new adhan.Coordinates(location.latitude, location.longitude));
+            qiblaAngle = adhan.Qibla(new adhan.Coordinates(location.latitude, location.longitude));
             document.getElementById('qiblaInfo').textContent = `قبلہ کی سمت: ${qiblaAngle.toFixed(2)}° (شمال سے) (Qibla Direction: ${qiblaAngle.toFixed(2)}° from North)`;
             if (map && marker) {
                 map.setView([location.latitude, location.longitude], 10);
@@ -1626,10 +1627,18 @@
             updateCountdown();
             setInterval(updateCountdown, 1000);
             getPrayerTimes();
+            window.addEventListener('deviceorientationabsolute', (event) => {
+                if (event.alpha) {
+                    // Subtract device heading from Qibla angle to get correct arrow direction
+                    const rotation = qiblaAngle - event.alpha;
+                    document.getElementById('qiblaArrow').style.transform = `rotate(${rotation}deg)`;
+                }
+            }, true);
         });
         document.querySelectorAll('*').forEach(el => el.setAttribute('dir', 'auto'));
 
     </script>
+
 <script type="module">
   import { Workbox } from 'https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-window.prod.mjs';
 

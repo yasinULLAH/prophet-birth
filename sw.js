@@ -78,7 +78,7 @@ if (workbox) {
     },
     {
         "url": "index.html",
-        "revision": "b4edadf5b9a9c13b9574d57632337cb9"
+        "revision": "cf2eb7c7e2c0045ea98cfb2b25e679e4"
     },
     {
         "url": "index.php",
@@ -118,7 +118,7 @@ if (workbox) {
     },
     {
         "url": "sw.js",
-        "revision": "58081d83a51fd7463fb1c92733a54017"
+        "revision": "a1a3bd5edb4154df8944286e71a2e17e"
     },
     {
         "url": "sessions/sess_4uu4st3e68dndgjnbmih15009d",
